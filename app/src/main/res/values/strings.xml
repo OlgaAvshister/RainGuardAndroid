@@ -1,0 +1,98 @@
+<resources>
+    <!-- Общее -->
+    <string name="app_name">Rain Guard</string>
+    <string name="welcome">Добро пожаловать в RainGuard!</string>
+    <string name="home_tab">Главная</string>
+    <string name="rent_tab">Аренда</string>
+    <string name="profile_tab">Профиль</string>
+    <string name="phone_number">Номер телефона</string>
+    <string name="i_understood">Понятно</string>
+    <string name="great">Отлично</string>
+    <string name="proceed">Продожить</string>
+    <string name="add">Добавить</string>
+    <string name="next">Далее</string>
+    <string name="back">Назад</string>
+    <string name="logout">Выйти</string>
+
+    <!-- Авторизация -->
+    <string name="consent_personal_data">При входе или регистрации вы даете согласие на обработку своих персональных данных</string>
+    <string name="get_sms_code">Получить код</string>
+    <string name="invalid_sms_code">Неверный код</string>
+    <string name="sms_try_again_msg">Попробуйте еще раз</string>
+
+    <!-- Карта -->
+    <string name="has_not_active_rent">Оформите новую аренду для просмотра</string>
+
+
+    <!-- Точка аренды/возврата -->
+    <string name="work_schedule">Сегодня 11:00-19:00</string>
+    <string name="tab_umbrella">Зонты</string>
+    <string name="tab_raincoats">Дождевики</string>
+
+    <!-- Детали пункта выдачи/Фильтр -->
+    <string name="filter_type_select">1. Выберите тип</string>
+    <string name="filter_type_select_folding">Складной</string>
+    <string name="filter_type_select_stick">Трость</string>
+    <string name="filter_type_select_jacket">Куртка</string>
+    <string name="filter_type_select_raincoat">На все тело</string>
+    <string name="filter_print_select">2. Нужен ли принт?</string>
+    <string name="filter_print_select_yes">Да</string>
+    <string name="filter_print_select_no">Нет</string>
+    <string name="filter_size_select">3. Выберите размер</string>
+    <string name="add_raincoat_later_label">Вы сможете добавить дождевик позже</string>
+    <string name="add_umbrella_later_label">Вы сможете добавить зонт позже</string>
+
+    <!-- Каталог -->
+    <string name="catalog_select_umbrellas">Выберите зонты</string>
+    <string name="catalog_select_raincoats">Выберите дождевики</string>
+
+    <!-- Заполнение инвентарных номеров -->
+    <string name="fill_ids">Введите номера товаров</string>
+    <string name="product_id_label">Товар №%s</string>
+
+
+    <!-- Корзина -->
+    <string name="cart_toolbar">Ваш выбор</string>
+    <string name="cart_need_raincoat">Нужен дождевик</string>
+    <string name="cart_need_umbrella">Нужен зонт</string>
+
+    <!-- Экран банковских карт -->
+    <string name="card_added">Карта добавлена</string>
+    <string name="select_pay_variant_toolbar">Выберите способ оплаты</string>
+    <string name="add_new_card">Добавить новую карту</string>
+    <string name="fill_card_data_toolbar">Введите данные карты</string>
+    <string name="check_card_text">Мы спишем и тут же вернем небольшую сумму, чтобы проверить вашу карту</string>
+    <string name="card_number_label">Номер карты</string>
+    <string name="card_expires_label">Действует до</string>
+    <string name="card_expires_cvv_label">CVV</string>
+    <string name="card_data_encrypted">Платежные данные всегда зашифрованы</string>
+
+    <!-- Экран активной аренды -->
+    <string name="current_rent_title">Текущая аренда</string>
+    <string name="rent_time_label">Время аренды</string>
+    <string name="rent_cost_label">Стоимость</string>
+    <string name="close_active_rent_bsheet">Закрыть</string>
+    <string name="return_here_active_rent_bsheet">Вернуть здесь</string>
+
+    <!-- Завершение аренды -->
+    <string name="give_products_to_check">Отдайте вещи для проверки</string>
+    <string name="if_broken_you_should_pay">Если вещь испорчена,\nвам нужно ее выкупить</string>
+    <string name="toolbar_fill_stuff_number">Введите номер, который сказал вам сотрудник</string>
+    <string name="stuff_number">Номер сотрудника</string>
+    <string name="waiting_for_money">Ждем оплату</string>
+    <string name="it_may_take_time">Это может занять некоторое время</string>
+    <string name="pay_success">Оплата прошла успешно</string>
+    <string name="pay_btn_text">Оплатить</string>
+    <string name="total_to_pay">Стоимость</string>
+    <string name="total_rent_time">Время аренды</string>
+    <string name="everything_good">Все хорошо</string>
+    <string name="you_can_pay_now">Можете оплачивать аренду</string>
+    <string name="map_label_select_return_point">Выберите точку возврата</string>
+
+    <!-- Проверка товара -->
+    <string name="fill_product_id_to_check">Введите номер товара</string>
+    <string name="product_label_to_check">Товар</string>
+    <string name="what_product_condition_title">Какое состояние у товара?</string>
+    <string name="next_product_button">Следующий</string>
+
+</resources>

@@ -1,0 +1,367 @@
+package com.olga.avshister.rainguard.presentation.screens
+
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.olga.avshister.rainguard.R
+import com.olga.avshister.rainguard.domain.products.Product
+import com.olga.avshister.rainguard.domain.rent.RentPoint
+import com.olga.avshister.rainguard.presentation.screens.RentPointBottomSheet.PAGE_COUNT
+import com.olga.avshister.rainguard.presentation.screens.RentPointBottomSheet.TAB_RAINCOAT
+import com.olga.avshister.rainguard.presentation.screens.RentPointBottomSheet.TAB_UMBRELLA
+import com.olga.avshister.rainguard.presentation.state.BSheetContentState
+import com.olga.avshister.rainguard.presentation.state.rent.RentState
+import com.olga.avshister.rainguard.presentation.ui.components.HeaderRentPoint
+import com.olga.avshister.rainguard.presentation.ui.components.PrimaryButton
+import com.olga.avshister.rainguard.presentation.ui.components.RentInfo
+import com.olga.avshister.rainguard.presentation.viewmodel.CustomerRentPointViewModel
+import com.olga.avshister.rainguard.presentation.viewmodel.CustomerRentPointViewModel.Intent
+import kotlinx.coroutines.launch
+
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@Composable
+fun CustomerRentPointScreen(
+    rentPoint: RentPoint,
+    onNextState: (state: BSheetContentState) -> Unit,
+) {
+    val context = LocalContext.current
+
+    val viewModel: CustomerRentPointViewModel = viewModel(
+        factory = remember(context, rentPoint) {
+            CustomerRentPointViewModel.RentPointViewModelFactory(context, rentPoint)
+        }
+    )
+
+    val filterState by viewModel.filterState.collectAsState()
+    val rentState by viewModel.rentState.collectAsState()
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding()
+            .imePadding()
+            .padding(12.dp)
+    ) {
+        if (viewModel.hasActiveRent()) {
+            ActiveRentBSheetContent(
+                rentPoint = rentPoint,
+                rentState = rentState,
+                onNextState = { onNextState(it) }
+            )
+        } else {
+            FiltersBSheetContent(
+                rentPoint = rentPoint,
+                state = filterState,
+                onIntent = {
+                    viewModel.onIntent(it)
+                },
+                onNextState = {
+                    onNextState(
+                        BSheetContentState.CatalogState(
+                            filter = filterState.filter,
+                            rentPointId = rentPoint.id
+                        )
+                    )
+                }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun FiltersBSheetContent(
+    rentPoint: RentPoint,
+    state: CustomerRentPointViewModel.FilterState,
+    onIntent: (intent: Intent) -> Unit,
+    onNextState: () -> Unit,
+) {
+    val scope = rememberCoroutineScope()
+    val pagerState = rememberPagerState(
+        initialPage = TAB_UMBRELLA,
+        pageCount = { PAGE_COUNT }
+    )
+
+    val tabs = listOf(
+        stringResource(R.string.tab_umbrella),
+        stringResource(R.string.tab_raincoats)
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(horizontal = 16.dp)
+    ) {
+        HeaderRentPoint(
+            title = rentPoint.name,
+            address = rentPoint.address,
+            openingHours = stringResource(R.string.work_schedule)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Tabs
+        TabRow(selectedTabIndex = pagerState.currentPage) {
+            tabs.forEachIndexed { index, title ->
+                Tab(
+                    selected = pagerState.currentPage == index,
+                    onClick = {
+                        onIntent(
+                            Intent.SelectProductType(
+                                if (index == TAB_UMBRELLA) {
+                                    Product.ProductType.UMBRELLA
+                                } else {
+                                    Product.ProductType.RAINCOAT
+                                }
+                            )
+                        )
+                        scope.launch {
+                            pagerState.scrollToPage(index)
+                        }
+                    },
+                    text = { Text(title) }
+                )
+            }
+        }
+
+        // Контент вкладок
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+        ) { page ->
+            when (page) {
+                TAB_UMBRELLA -> UmbrellaContent(
+                    state,
+                    onIntent = { onIntent(it) }
+                )
+                TAB_RAINCOAT -> RaincoatContent(
+                    state,
+                    onIntent = { onIntent(it) }
+                )
+            }
+        }
+
+        // Нижняя кнопка
+        BottomSection(
+            buttonText = stringResource(R.string.next),
+            onClicked = {
+                onNextState()
+            }
+        )
+    }
+}
+
+@Composable
+private fun ActiveRentBSheetContent(
+    rentPoint: RentPoint,
+    rentState: RentState,
+    onNextState: (state: BSheetContentState) -> Unit,
+) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .navigationBarsPadding()
+            .padding(horizontal = 16.dp, vertical = 16.dp)
+    ) {
+        // Заголовок и адрес
+        HeaderRentPoint(
+            title = rentPoint.name,
+            address = rentPoint.address,
+            openingHours = stringResource(R.string.work_schedule)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        RentInfo(state = rentState)
+
+        // Нижняя кнопка
+        BottomSection(
+            buttonText = stringResource(R.string.return_here_active_rent_bsheet),
+            onClicked = {
+                onNextState(BSheetContentState.SelectIdsStateToDropState)
+            }
+        )
+    }
+}
+
+@Composable
+fun UmbrellaContent(
+    state: CustomerRentPointViewModel.FilterState,
+    onIntent: (Intent) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        CheckboxGroup(
+            title = stringResource(R.string.filter_type_select),
+            options = mapOf(
+                stringResource(R.string.filter_type_select_folding) to Product.FormFactor.FOLDING,
+                stringResource(R.string.filter_type_select_stick) to Product.FormFactor.STICK
+            ),
+            selected = state.filter.formFactor,
+            onSelected = {
+                onIntent(Intent.SelectFormFactor(it))
+            }
+        )
+
+        CheckboxGroup(
+            title = stringResource(R.string.filter_print_select),
+            options = mapOf(
+                stringResource(R.string.filter_print_select_yes) to Product.PrintType.WITH_PRINT,
+                stringResource(R.string.filter_print_select_no) to Product.PrintType.WITHOUT_PRINT
+            ),
+            selected = state.filter.printType,
+            onSelected = {
+                onIntent(Intent.SelectPrintType(it))
+            }
+        )
+    }
+}
+
+@Composable
+fun RaincoatContent(
+    state: CustomerRentPointViewModel.FilterState,
+    onIntent: (Intent) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        CheckboxGroup(
+            title = stringResource(R.string.filter_type_select),
+            options = mapOf(
+                stringResource(R.string.filter_type_select_jacket) to Product.FormFactor.JACKET,
+                stringResource(R.string.filter_type_select_raincoat) to Product.FormFactor.RAINCOAT
+            ),
+            selected = state.filter.formFactor,
+            onSelected = {
+                onIntent(Intent.SelectFormFactor(it))
+            }
+        )
+
+        CheckboxGroup(
+            title = stringResource(R.string.filter_print_select),
+            options = mapOf(
+                stringResource(R.string.filter_print_select_yes) to Product.PrintType.WITH_PRINT,
+                stringResource(R.string.filter_print_select_no) to Product.PrintType.WITHOUT_PRINT
+            ),
+            selected = state.filter.printType,
+            onSelected = {
+                onIntent(Intent.SelectPrintType(it))
+            }
+        )
+
+        CheckboxGroup(
+            title = stringResource(R.string.filter_size_select),
+            options = mapOf(
+                Product.Size.XS.value to Product.Size.XS,
+                Product.Size.S.value to Product.Size.S,
+                Product.Size.M.value to Product.Size.M,
+                Product.Size.L.value to Product.Size.L,
+                Product.Size.XL.value to Product.Size.XL
+            ),
+            selected = state.filter.size,
+            onSelected = {
+                onIntent(Intent.SelectSize(it))
+            }
+        )
+    }
+}
+
+@Composable
+fun <T> CheckboxGroup(
+    title: String,
+    options: Map<String, T>,
+    selected: T?,
+    onSelected: (T) -> Unit
+) {
+    Column {
+        Text(
+            text = title,
+            fontWeight = FontWeight.Medium,
+            fontSize = 16.sp
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            options.forEach { (label, value) ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable {
+                        onSelected(value)
+                    }
+                ) {
+                    Checkbox(
+                        checked = selected == value,
+                        onCheckedChange = { onSelected(value) }
+                    )
+                    Text(text = label)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun BottomSection(
+    buttonText: String,
+    onClicked: () -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp)
+    ) {
+
+        PrimaryButton(
+            text = buttonText,
+            modifier = Modifier.fillMaxWidth(),
+            onClick = {
+                onClicked.invoke()
+            }
+        )
+    }
+}
+
+object RentPointBottomSheet {
+    const val TAB_UMBRELLA = 0
+    const val TAB_RAINCOAT = 1
+    const val PAGE_COUNT = 2
+}
