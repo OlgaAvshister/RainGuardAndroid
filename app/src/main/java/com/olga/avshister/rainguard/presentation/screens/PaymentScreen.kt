@@ -51,7 +51,12 @@ import com.olga.avshister.rainguard.presentation.viewmodel.PaymentViewModel
 fun PaymentScreen(
     onNextState: (state: BSheetContentState) -> Unit,
 ) {
-    val viewModel: PaymentViewModel = viewModel()
+    val viewModelKey = remember {
+        "PaymentScreen${System.currentTimeMillis()}"
+    }
+
+    val viewModel: PaymentViewModel = viewModel(key = viewModelKey)
+
 
     when (viewModel.uiState) {
         PaymentViewModel.PaymentUiState.Select -> {

@@ -15,6 +15,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,7 +33,11 @@ import com.olga.avshister.rainguard.presentation.viewmodel.RentTotalViewModel
 fun RentTotalScreen(
     onNextState: (state: BSheetContentState) -> Unit,
 ) {
-    val viewModel: RentTotalViewModel = viewModel()
+    val viewModelKey = remember {
+        "RentTotalScreen${System.currentTimeMillis()}"
+    }
+
+    val viewModel: RentTotalViewModel = viewModel(key = viewModelKey)
     val state = viewModel.state.collectAsState()
 
     Box(

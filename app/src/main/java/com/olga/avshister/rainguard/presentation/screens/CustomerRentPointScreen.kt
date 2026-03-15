@@ -53,10 +53,13 @@ fun CustomerRentPointScreen(
 ) {
     val context = LocalContext.current
 
+    val viewModelKey = remember {
+        "RentPoint_${System.currentTimeMillis()}"
+    }
+
     val viewModel: CustomerRentPointViewModel = viewModel(
-        factory = remember(context, rentPoint) {
-            CustomerRentPointViewModel.RentPointViewModelFactory(context, rentPoint)
-        }
+        key = viewModelKey,
+        factory = CustomerRentPointViewModel.RentPointViewModelFactory(context, rentPoint)
     )
 
     val filterState by viewModel.filterState.collectAsState()

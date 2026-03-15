@@ -72,15 +72,47 @@ fun MapScreen(navController: NavHostController) {
         mutableStateOf<BSheetContentState>(BSheetContentState.IdleState)
     }
 
+    // Стек навигации
+    var backStack by remember {
+        mutableStateOf(listOf<BSheetContentState>())
+    }
+
     val viewModel: MapViewModel = viewModel()
     val scope = rememberCoroutineScope()
 
     val mapMainContentState = viewModel.mainContentState.collectAsState()
 
+    fun navigateTo(state: BSheetContentState) {
+        backStack = backStack + currentBSheetContentState
+        currentBSheetContentState = state
+    }
+
+    fun navigateBack() {
+        if (backStack.isNotEmpty()) {
+            currentBSheetContentState = backStack.last()
+            backStack = backStack.dropLast(1)
+        } else {
+            // Закрываем bottom sheet если стек пуст
+            scope.launch {
+                bSheetVisibilityState.hide()
+            }
+        }
+    }
+
+
     // Обработка системной кнопки "Назад"
     BackHandler(
         enabled = currentBSheetContentState != BSheetContentState.IdleState
     ) {
+        if (backStack.isNotEmpty()) {
+            navigateBack()
+        } else {
+            scope.launch {
+                bSheetVisibilityState.hide()
+            }
+        }
+
+
         scope.launch {
             // Сначала скрываем bottom sheet
             when (currentBSheetContentState) {
@@ -98,6 +130,7 @@ fun MapScreen(navController: NavHostController) {
             ModalBottomSheetValue.Hidden -> {
                 currentBSheetContentState = BSheetContentState.IdleState
                 bSheetVisibilityState.hide()
+                backStack = emptyList()
             }
 
             else -> {}
@@ -106,7 +139,10 @@ fun MapScreen(navController: NavHostController) {
 
     // Следим за изменением контента и управляем видимостью bottom sheet
     LaunchedEffect(currentBSheetContentState) {
-        Log.d("CUSTOMER_RENT_POINT_VM", "LaunchedEffect(currentBSheetContentState): $currentBSheetContentState")
+        Log.d(
+            "CUSTOMER_RENT_POINT_VM",
+            "LaunchedEffect(currentBSheetContentState): $currentBSheetContentState"
+        )
         when (currentBSheetContentState) {
             BSheetContentState.IdleState -> {
                 viewModel.onIntent(BSheetContentState.IdleState)
@@ -127,134 +163,131 @@ fun MapScreen(navController: NavHostController) {
     ModalBottomSheetLayout(
         sheetState = bSheetVisibilityState,
         sheetContent = {
-            key("${currentBSheetContentState::class.simpleName}-${bSheetVisibilityState.isVisible}") {
-                if (bSheetVisibilityState.isVisible) {
-
-                    // Контент bottom sheet
-                    when (currentBSheetContentState) {
-                        is BSheetContentState.RentPointState -> {
-                            CustomerRentPointScreen(
-                                rentPoint = (currentBSheetContentState as BSheetContentState.RentPointState).rentPoint!!,
-                                onNextState = { state ->
-                                    currentBSheetContentState = state
-                                }
-                            )
-                        }
-
-                        is BSheetContentState.CurrentRentState -> {
-                            CurrentRentBSheet(
-                                onDismiss = {
-                                    scope.launch {
-                                        currentBSheetContentState = BSheetContentState.IdleState
-                                    }
-                                }
-                            )
-                        }
-
-                        is BSheetContentState.CatalogState -> {
-                            (currentBSheetContentState as BSheetContentState.CatalogState).let {
-                                CatalogScreen(
-                                    it.filter,
-                                    it.rentPointId,
-                                    onNextState = { state ->
-                                        currentBSheetContentState = state
-                                    }
-                                )
+            key(currentBSheetContentState::class.simpleName) {
+                // Контент bottom sheet
+                when (currentBSheetContentState) {
+                    is BSheetContentState.RentPointState -> {
+                        CustomerRentPointScreen(
+                            rentPoint = (currentBSheetContentState as BSheetContentState.RentPointState).rentPoint!!,
+                            onNextState = { state ->
+                                currentBSheetContentState = state
                             }
-                        }
+                        )
+                    }
 
-                        is BSheetContentState.CartState -> {
-                            (currentBSheetContentState as BSheetContentState.CartState).let {
-                                CartScreen(
-                                    it.selectedArticles,
-                                    it.rentPointId,
-                                    onNextState = { state ->
-                                        currentBSheetContentState = state
-                                    }
-                                )
-                            }
-                        }
-
-                        is BSheetContentState.SelectIdsStateToTakeState -> {
-                            SelectIdsScreen(
-                                openToTake = true,
-                                onNextState = { state ->
-                                    currentBSheetContentState = state
-                                }
-                            )
-                        }
-
-                        is BSheetContentState.CheckoutState -> {
-                            CheckoutScreen(
-                                onNextState = { state ->
-                                    currentBSheetContentState = state
-                                }
-                            )
-                        }
-
-                        is BSheetContentState.CardsState -> {
-                            PaymentScreen(
-                                onNextState = { state ->
-                                    currentBSheetContentState = state
-                                }
-                            )
-                        }
-
-                        is BSheetContentState.SelectIdsStateToDropState -> {
-                            SelectIdsScreen(
-                                openToTake = false,
-                                onNextState = { state ->
-                                    currentBSheetContentState = state
-                                }
-                            )
-                        }
-
-                        is BSheetContentState.GiveToCheckState -> {
-                            GiveToCheckScreen(
-                                onNextState = { state ->
-                                    currentBSheetContentState = state
-                                }
-                            )
-                        }
-
-                        is BSheetContentState.FillStuffNumberState -> {
-                            FillStuffNumber(
-                                onNextState = { state ->
-                                    currentBSheetContentState = state
-                                }
-                            )
-                        }
-
-                        is BSheetContentState.RentTotalState -> {
-                            RentTotalScreen(
-                                onNextState = { state ->
-                                    currentBSheetContentState = state
-                                }
-                            )
-                        }
-
-                        is BSheetContentState.PayInProgressState -> {
-                            PayInProgress(
-                                onNextState = { state ->
-                                    currentBSheetContentState = state
-                                }
-                            )
-                        }
-
-                        is BSheetContentState.PaySuccessState -> {
-                            SuccessScreen(
-                                message = stringResource(R.string.pay_success),
-                                buttonText = stringResource(R.string.great),
-                                onClick = {
+                    is BSheetContentState.CurrentRentState -> {
+                        CurrentRentBSheet(
+                            onDismiss = {
+                                scope.launch {
                                     currentBSheetContentState = BSheetContentState.IdleState
                                 }
+                            }
+                        )
+                    }
+
+                    is BSheetContentState.CatalogState -> {
+                        (currentBSheetContentState as BSheetContentState.CatalogState).let {
+                            CatalogScreen(
+                                it.filter,
+                                it.rentPointId,
+                                onNextState = { state ->
+                                    currentBSheetContentState = state
+                                }
                             )
                         }
+                    }
 
-                        else -> {
-                            // Пустой контент для InitState
-                            //Box(modifier = Modifier.fillMaxWidth())
+                    is BSheetContentState.CartState -> {
+                        (currentBSheetContentState as BSheetContentState.CartState).let {
+                            CartScreen(
+                                it.selectedArticles,
+                                it.rentPointId,
+                                onNextState = { state ->
+                                    currentBSheetContentState = state
+                                }
+                            )
                         }
+                    }
+
+                    is BSheetContentState.SelectIdsStateToTakeState -> {
+                        SelectIdsScreen(
+                            openToTake = true,
+                            onNextState = { state ->
+                                currentBSheetContentState = state
+                            }
+                        )
+                    }
+
+                    is BSheetContentState.CheckoutState -> {
+                        CheckoutScreen(
+                            onNextState = { state ->
+                                currentBSheetContentState = state
+                            }
+                        )
+                    }
+
+                    is BSheetContentState.CardsState -> {
+                        PaymentScreen(
+                            onNextState = { state ->
+                                currentBSheetContentState = state
+                            }
+                        )
+                    }
+
+                    is BSheetContentState.SelectIdsStateToDropState -> {
+                        SelectIdsScreen(
+                            openToTake = false,
+                            onNextState = { state ->
+                                currentBSheetContentState = state
+                            }
+                        )
+                    }
+
+                    is BSheetContentState.GiveToCheckState -> {
+                        GiveToCheckScreen(
+                            onNextState = { state ->
+                                currentBSheetContentState = state
+                            }
+                        )
+                    }
+
+                    is BSheetContentState.FillStuffNumberState -> {
+                        FillStuffNumber(
+                            onNextState = { state ->
+                                currentBSheetContentState = state
+                            }
+                        )
+                    }
+
+                    is BSheetContentState.RentTotalState -> {
+                        RentTotalScreen(
+                            onNextState = { state ->
+                                currentBSheetContentState = state
+                            }
+                        )
+                    }
+
+                    is BSheetContentState.PayInProgressState -> {
+                        PayInProgress(
+                            onNextState = { state ->
+                                currentBSheetContentState = state
+                            }
+                        )
+                    }
+
+                    is BSheetContentState.PaySuccessState -> {
+                        SuccessScreen(
+                            message = stringResource(R.string.pay_success),
+                            buttonText = stringResource(R.string.great),
+                            onClick = {
+                                currentBSheetContentState = BSheetContentState.IdleState
+                            }
+                        )
+                    }
+
+                    else -> {
+                        // Пустой контент для InitState
+                        //Box(modifier = Modifier.fillMaxWidth())
                     }
                 }
             }
@@ -295,7 +328,11 @@ fun MainContent(
                     if (mapMainContentState.hasActiveRent) {
                         onBSheetContent(BSheetContentState.CurrentRentState)
                     } else {
-                        Toast.makeText(context, context.getString(R.string.has_not_active_rent), Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.has_not_active_rent),
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
             )

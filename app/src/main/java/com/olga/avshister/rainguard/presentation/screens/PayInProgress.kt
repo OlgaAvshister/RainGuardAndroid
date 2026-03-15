@@ -12,6 +12,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -28,8 +29,13 @@ import com.olga.avshister.rainguard.presentation.viewmodel.PayInProgressViewMode
 fun PayInProgress(
     onNextState: (state: BSheetContentState) -> Unit,
 ) {
-    val viewModel: PayInProgressViewModel = viewModel()
+    val viewModelKey = remember {
+        "PayInProgress${System.currentTimeMillis()}"
+    }
+
+    val viewModel: PayInProgressViewModel = viewModel(key = viewModelKey)
     val state = viewModel.state.collectAsState()
+
 
     Column(
         modifier = Modifier

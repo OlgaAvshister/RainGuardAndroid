@@ -51,6 +51,7 @@ import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.presentation.state.BSheetContentState
 import com.olga.avshister.rainguard.presentation.ui.components.PrimaryButton
 import com.olga.avshister.rainguard.presentation.viewmodel.CartViewModel
+import com.olga.avshister.rainguard.presentation.viewmodel.CustomerRentPointViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +61,10 @@ fun CartScreen(
     onNextState: (state: BSheetContentState) -> Unit,
 ) {
     val context = LocalContext.current
+
+    val viewModelKey = remember {
+        "CartScreen_${System.currentTimeMillis()}"
+    }
 
     if (selectedArticles == null || rentPointId == null) {
         // Показываем заглушку пока параметры не загружены
@@ -73,13 +78,13 @@ fun CartScreen(
     }
 
     val viewModel: CartViewModel = viewModel(
-        factory = remember(rentPointId, selectedArticles) {
+        key = viewModelKey,
+        factory =
             CartViewModel.CartViewModelFactory(
                 context = context,
                 rentPointId = rentPointId,
                 selectedArticles = selectedArticles
             )
-        }
     )
 
     // Собираем состояние из ViewModel

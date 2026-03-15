@@ -52,7 +52,12 @@ fun SelectIdsScreen(
 ) {
     val context = LocalContext.current
 
+    val viewModelKey = remember {
+        "SelectIdsScreen${System.currentTimeMillis()}"
+    }
+
     val viewModel: SelectIdsViewModel = viewModel(
+        key = viewModelKey,
         factory = remember(context, openToTake) {
             SelectIdsViewModel.SelectIdsViewModelFactory(context, openToTake)
         }
