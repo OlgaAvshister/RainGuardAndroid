@@ -111,17 +111,6 @@ fun MapScreen(navController: NavHostController) {
                 bSheetVisibilityState.hide()
             }
         }
-
-
-        scope.launch {
-            // Сначала скрываем bottom sheet
-            when (currentBSheetContentState) {
-                // нужно прописать логику, куда возвращать пользователя (установить нужно значени currentBSheetContent)
-                else -> {
-                    currentBSheetContentState = BSheetContentState.IdleState
-                }
-            }
-        }
     }
 
     // Обработка закрытия боттомшита свайпом вниз
@@ -170,7 +159,7 @@ fun MapScreen(navController: NavHostController) {
                         CustomerRentPointScreen(
                             rentPoint = (currentBSheetContentState as BSheetContentState.RentPointState).rentPoint!!,
                             onNextState = { state ->
-                                currentBSheetContentState = state
+                                navigateTo(state)
                             }
                         )
                     }
@@ -179,7 +168,7 @@ fun MapScreen(navController: NavHostController) {
                         CurrentRentBSheet(
                             onDismiss = {
                                 scope.launch {
-                                    currentBSheetContentState = BSheetContentState.IdleState
+                                    navigateTo(BSheetContentState.IdleState)
                                 }
                             }
                         )
@@ -191,7 +180,7 @@ fun MapScreen(navController: NavHostController) {
                                 it.filter,
                                 it.rentPointId,
                                 onNextState = { state ->
-                                    currentBSheetContentState = state
+                                    navigateTo(state)
                                 }
                             )
                         }
@@ -203,7 +192,7 @@ fun MapScreen(navController: NavHostController) {
                                 it.selectedArticles,
                                 it.rentPointId,
                                 onNextState = { state ->
-                                    currentBSheetContentState = state
+                                    navigateTo(state)
                                 }
                             )
                         }
@@ -213,7 +202,7 @@ fun MapScreen(navController: NavHostController) {
                         SelectIdsScreen(
                             openToTake = true,
                             onNextState = { state ->
-                                currentBSheetContentState = state
+                                navigateTo(state)
                             }
                         )
                     }
@@ -221,7 +210,7 @@ fun MapScreen(navController: NavHostController) {
                     is BSheetContentState.CheckoutState -> {
                         CheckoutScreen(
                             onNextState = { state ->
-                                currentBSheetContentState = state
+                                navigateTo(state)
                             }
                         )
                     }
@@ -229,7 +218,7 @@ fun MapScreen(navController: NavHostController) {
                     is BSheetContentState.CardsState -> {
                         PaymentScreen(
                             onNextState = { state ->
-                                currentBSheetContentState = state
+                                navigateTo(state)
                             }
                         )
                     }
@@ -238,7 +227,7 @@ fun MapScreen(navController: NavHostController) {
                         SelectIdsScreen(
                             openToTake = false,
                             onNextState = { state ->
-                                currentBSheetContentState = state
+                                navigateTo(state)
                             }
                         )
                     }
@@ -246,7 +235,7 @@ fun MapScreen(navController: NavHostController) {
                     is BSheetContentState.GiveToCheckState -> {
                         GiveToCheckScreen(
                             onNextState = { state ->
-                                currentBSheetContentState = state
+                                navigateTo(state)
                             }
                         )
                     }
@@ -254,7 +243,7 @@ fun MapScreen(navController: NavHostController) {
                     is BSheetContentState.FillStuffNumberState -> {
                         FillStuffNumber(
                             onNextState = { state ->
-                                currentBSheetContentState = state
+                                navigateTo(state)
                             }
                         )
                     }
@@ -262,7 +251,7 @@ fun MapScreen(navController: NavHostController) {
                     is BSheetContentState.RentTotalState -> {
                         RentTotalScreen(
                             onNextState = { state ->
-                                currentBSheetContentState = state
+                                navigateTo(state)
                             }
                         )
                     }
@@ -270,7 +259,7 @@ fun MapScreen(navController: NavHostController) {
                     is BSheetContentState.PayInProgressState -> {
                         PayInProgress(
                             onNextState = { state ->
-                                currentBSheetContentState = state
+                                navigateTo(state)
                             }
                         )
                     }
@@ -280,14 +269,13 @@ fun MapScreen(navController: NavHostController) {
                             message = stringResource(R.string.pay_success),
                             buttonText = stringResource(R.string.great),
                             onClick = {
-                                currentBSheetContentState = BSheetContentState.IdleState
+                                navigateTo(BSheetContentState.IdleState)
                             }
                         )
                     }
 
                     else -> {
-                        // Пустой контент для InitState
-                        //Box(modifier = Modifier.fillMaxWidth())
+                        navigateTo(BSheetContentState.IdleState)
                     }
                 }
             }
