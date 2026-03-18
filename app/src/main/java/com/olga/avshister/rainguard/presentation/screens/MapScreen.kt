@@ -44,10 +44,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.olga.avshister.rainguard.R
+import com.olga.avshister.rainguard.domain.profile.Role
 import com.olga.avshister.rainguard.domain.rent.RentPoint
+import com.olga.avshister.rainguard.presentation.core.PROFILE_SCREEN
+import com.olga.avshister.rainguard.presentation.screens.owner.OwnerRentPointScreen
 import com.olga.avshister.rainguard.presentation.state.BSheetContentState
 import com.olga.avshister.rainguard.presentation.state.MapMainContentState
 import com.olga.avshister.rainguard.presentation.ui.TextImageProvider
@@ -80,7 +85,7 @@ fun MapScreen(navController: NavHostController) {
     val viewModel: MapViewModel = viewModel()
     val scope = rememberCoroutineScope()
 
-    val mapMainContentState = viewModel.mainContentState.collectAsState()
+    val mapMainContentState by viewModel.mainContentState.collectAsStateWithLifecycle()
 
     fun navigateTo(state: BSheetContentState) {
         backStack = backStack + currentBSheetContentState
@@ -157,7 +162,7 @@ fun MapScreen(navController: NavHostController) {
                 when (currentBSheetContentState) {
                     is BSheetContentState.RentPointState -> {
                         CustomerRentPointScreen(
-                            rentPoint = (currentBSheetContentState as BSheetContentState.RentPointState).rentPoint!!,
+                            rentPoint = (currentBSheetContentState as BSheetContentState.RentPointState).rentPoint,
                             onNextState = { state ->
                                 navigateTo(state)
                             }
@@ -274,6 +279,16 @@ fun MapScreen(navController: NavHostController) {
                         )
                     }
 
+                    //region Owner states
+                    is BSheetContentState.OwnerRentPointState -> {
+                        OwnerRentPointScreen(
+                            rentPoint = (currentBSheetContentState as BSheetContentState.OwnerRentPointState).rentPoint
+                        ) { state ->
+                            navigateTo(state)
+                        }
+                    }
+                    //endregion
+
                     else -> {
                         navigateTo(BSheetContentState.IdleState)
                     }
@@ -282,9 +297,10 @@ fun MapScreen(navController: NavHostController) {
 
         }
     ) {
-        // Основной контент (всегда отобрадается, когда bottom sheet скрыт)
+        // Основной контент (всегда отображается, когда bottom sheet скрыт)
         MainContent(
-            mapMainContentState.value,
+            mapMainContentState,
+            navController,
             onBSheetContent = { content ->
                 currentBSheetContentState = content
             }
@@ -295,7 +311,8 @@ fun MapScreen(navController: NavHostController) {
 @Composable
 fun MainContent(
     mapMainContentState: MapMainContentState,
-    onBSheetContent: (state: BSheetContentState) -> Unit
+    navController: NavController,
+    onBSheetContent: (state: BSheetContentState) -> Unit,
 ) {
     val context = LocalContext.current
     val mapView = remember { mutableStateOf<MapView?>(null) }
@@ -303,7 +320,12 @@ fun MainContent(
     val initialPoint = Point(55.752511, 37.621570)
 
     val placemarkTapListener = MapObjectTapListener { rentPoint, point ->
-        onBSheetContent(BSheetContentState.RentPointState(rentPoint.userData as? RentPoint?))
+        val rentPointState = when (mapMainContentState.role) {
+            Role.CUSTOMER -> BSheetContentState.RentPointState(rentPoint.userData as RentPoint)
+            Role.OWNER -> BSheetContentState.OwnerRentPointState(rentPoint.userData as RentPoint)
+            else -> { throw IllegalArgumentException("Interaction with the map must be as a Customer or Owner only") }
+        }
+        onBSheetContent(rentPointState)
         true
     }
 
@@ -322,6 +344,9 @@ fun MainContent(
                             Toast.LENGTH_LONG
                         ).show()
                     }
+                },
+                onProfileClicked = {
+                    navController.navigate(PROFILE_SCREEN)
                 }
             )
         }
@@ -391,38 +416,40 @@ fun MainContent(
                         30.0f
                     )
                 )
+            }
+        }
 
-                val clusterizedCollection =
-                    mapView.mapWindow.map.mapObjects.addClusterizedPlacemarkCollection { cluster ->
-                        cluster.appearance.setIcon(
-                            TextImageProvider(
-                                context,
-                                cluster.size.toString(),
-                                R.drawable.ic_placemark
-                            )
+        mapView.value?.let { mapView ->
+            val clusterizedCollection =
+                mapView.mapWindow.map.mapObjects.addClusterizedPlacemarkCollection { cluster ->
+                    cluster.appearance.setIcon(
+                        TextImageProvider(
+                            context,
+                            cluster.size.toString(),
+                            R.drawable.ic_placemark
                         )
-                    }
-
-                val imageProvider = ImageProvider.fromResource(context, R.drawable.ic_placemark)
-
-                mapMainContentState.rentPoints.forEach { rentPoint ->
-                    clusterizedCollection.addPlacemark().apply {
-                        geometry = Point(rentPoint.latitude, rentPoint.longitude)
-                        userData = rentPoint
-                        addTapListener(placemarkTapListener)
-                        setIcon(imageProvider)
-                    }
+                    )
                 }
 
-                clusterizedCollection.clusterPlacemarks(60.0, 15)
+            val imageProvider = ImageProvider.fromResource(context, R.drawable.ic_placemark)
+
+            Log.d("MAP_SCREEN", "adding placemarks: rent points number=${mapMainContentState.rentPoints.size}")
+            mapMainContentState.rentPoints.forEach { rentPoint ->
+                clusterizedCollection.addPlacemark().apply {
+                    geometry = Point(rentPoint.latitude, rentPoint.longitude)
+                    userData = rentPoint
+                    addTapListener(placemarkTapListener)
+                    setIcon(imageProvider)
+                }
             }
+            clusterizedCollection.clusterPlacemarks(60.0, 15)
         }
     }
 }
 
 
 @Composable
-fun BottomBar(onRentClicked: () -> Unit) {
+fun BottomBar(onRentClicked: () -> Unit, onProfileClicked: () -> Unit) {
     Surface(
         shape = RoundedCornerShape(20.dp),
         shadowElevation = 8.dp,
@@ -445,7 +472,7 @@ fun BottomBar(onRentClicked: () -> Unit) {
                 // мы уже здесь
             }
             BottomBarItem(BottomBarItem.PROFILE) {
-                // todo: перейти в профиль
+                onProfileClicked()
             }
         }
     }

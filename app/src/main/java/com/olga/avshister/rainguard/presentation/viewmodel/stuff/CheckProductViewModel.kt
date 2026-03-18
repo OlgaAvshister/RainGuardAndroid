@@ -57,8 +57,8 @@ class CheckProductViewModel(application: Application) : AndroidViewModel(applica
             }
 
             is Intent.OnLogoutClick -> {
-                authRepository.logout()
                 viewModelScope.launch {
+                    authRepository.logout()
                     _navigationEvent.emit(NavigationEvent.NavigateToScreen(AUTH_PHONE_SCREEN))
                 }
             }

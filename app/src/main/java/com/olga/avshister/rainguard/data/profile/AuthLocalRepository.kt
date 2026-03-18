@@ -10,6 +10,9 @@ import com.olga.avshister.rainguard.domain.cart.Cart
 import com.olga.avshister.rainguard.domain.payment.Card
 import com.olga.avshister.rainguard.domain.profile.Profile
 import com.olga.avshister.rainguard.domain.profile.Role
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
 class AuthLocalRepository(context: Context): AuthRepository {
@@ -32,15 +35,17 @@ class AuthLocalRepository(context: Context): AuthRepository {
         }
     }
 
-    override fun logout() {
+    override suspend fun logout() {
+        delay(100)
         prefs.setLong(KEY_CURRENT_PROFILE_ID, value = -1)
         prefs.setBoolean(KEY_IS_USER_LOGGED, false)
     }
 
-    override fun getProfile(): Profile? {
+    override suspend fun getProfile(): Profile? = withContext(Dispatchers.IO) {
+        // Имитация загрузки данных (для проверки прогрессбаров и пр.)
+        delay(200)
         val currentProfileId = prefs.getLong(KEY_CURRENT_PROFILE_ID, -1)
-        val profile = getAllProfiles().find { it.id == currentProfileId }
-        return profile
+        getAllProfiles().find { it.id == currentProfileId }
     }
 
     override fun updateProfile(profile: Profile) {
@@ -66,7 +71,7 @@ class AuthLocalRepository(context: Context): AuthRepository {
 
     }
 
-    override fun addCard(card: Card) {
+    override suspend fun addCard(card: Card) {
         getProfile()?.let { profile ->
             profile.copy(cards = profile.cards.plus(card)).apply {
                 updateProfile(this)
@@ -83,11 +88,11 @@ class AuthLocalRepository(context: Context): AuthRepository {
          */
     }
 
-    override fun getCart(): Cart? {
+    override suspend fun getCart(): Cart? {
         return getProfile()?.cart
     }
 
-    override fun addToCart(article: Long) {
+    override suspend fun addToCart(article: Long) {
         getProfile()?.let { profile ->
             val modifiedCartProducts = getCart()?.products?.toMutableList()
             modifiedCartProducts?.let { products ->
@@ -102,7 +107,7 @@ class AuthLocalRepository(context: Context): AuthRepository {
         } ?: throw NullPointerException ("AuthLocalRepository/addToCart: Не удалось получить профиль null")
     }
 
-    override fun removeFromCart(article: Long) {
+    override suspend fun removeFromCart(article: Long) {
         getProfile()?.let { profile ->
             val modifiedCartProducts = getCart()?.products?.toMutableList()
             modifiedCartProducts?.let { products ->
@@ -116,7 +121,7 @@ class AuthLocalRepository(context: Context): AuthRepository {
         } ?: throw NullPointerException ("AuthLocalRepository/removeFromCart: Не удалось получить профиль null")
     }
 
-    override fun clearCart() {
+    override suspend fun clearCart() {
         // Очщаем корзину сразу после формирования заказа
         getProfile()?.let { profile ->
             updateProfile(
@@ -161,6 +166,7 @@ class AuthLocalRepository(context: Context): AuthRepository {
         Log.d("registerAndAuthUser", "phone=$phone")
         val createdProfile = Profile(
             id = Random.nextLong(),
+            name = null,
             phone = phone,
             role = getMockProfileRole(phone),
             cart = Cart(products = emptyList()),
@@ -187,7 +193,6 @@ class AuthLocalRepository(context: Context): AuthRepository {
         Log.d("registerAndAuthUser", "getMockProfileRole called, phone=$phone, role=$role")
         return role
     }
-
 
     companion object {
         private const val MOCK_STUFF_NUMBER = "1111111111"

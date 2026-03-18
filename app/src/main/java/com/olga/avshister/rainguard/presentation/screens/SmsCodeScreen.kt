@@ -115,13 +115,22 @@ fun SmsCodeScreen(navController: NavController, phoneNumber: String) {
         }.getOrNull()?.let { profile ->
             when (profile.role) {
                 Role.CUSTOMER -> {
-                    navController.navigate(MAP_SCREEN)
+                    navController.navigate(MAP_SCREEN) {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
                 Role.STUFF -> {
-                    navController.navigate(SELECT_PRODUCT_TO_CHECK_SCREEN)
+                    navController.navigate(SELECT_PRODUCT_TO_CHECK_SCREEN) {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
                 Role.OWNER -> {
-                    navController.navigate(MAP_SCREEN)
+                    navController.navigate(MAP_SCREEN) {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
             }
 

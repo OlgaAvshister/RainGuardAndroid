@@ -9,6 +9,7 @@ import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
 import com.olga.avshister.rainguard.data.profile.AuthRepository
 import com.olga.avshister.rainguard.domain.filter.Filter
 import com.olga.avshister.rainguard.domain.products.Product.*
+import com.olga.avshister.rainguard.domain.profile.Profile
 import com.olga.avshister.rainguard.domain.rent.Rent
 import com.olga.avshister.rainguard.domain.rent.RentPoint
 import com.olga.avshister.rainguard.presentation.state.rent.RentState
@@ -16,6 +17,7 @@ import com.olga.avshister.rainguard.presentation.ui.utils.Utils
 import com.olga.avshister.rainguard.presentation.viewmodel.CurrentRentViewModel.Intent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,9 +34,8 @@ class CustomerRentPointViewModel(
     private val authRepository: AuthRepository = AuthLocalRepository(context)
 
     private var timerJob: Job? = null
-
-    val activeRent: Rent? = authRepository.getProfile()?.activeRent
-
+    private var profile: Profile? = null
+    private val activeRent: Rent? by lazy { profile?.activeRent }
 
     private var startTime = activeRent?.startedAt
 
@@ -62,10 +63,13 @@ class CustomerRentPointViewModel(
     init {
         Log.d("CUSTOMER_RENT_POINT_VM", "init")
         authRepository.setCurrentRentPointId(rentPoint.id)
+        viewModelScope.async(Dispatchers.IO) {
+            authRepository.getProfile()
+        }
         startTimer()
     }
 
-    fun hasActiveRent(): Boolean = authRepository.getProfile()?.activeRent != null
+    fun hasActiveRent(): Boolean = profile?.activeRent != null
 
     // ---------- Intents ----------
 

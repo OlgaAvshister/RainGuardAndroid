@@ -46,6 +46,9 @@ const val RENT_SCREEN = "RENT_SCREEN"
 // Экран деталей точки аренда/пункта возврата
 const val RENT_POINT_SCREEN_PATH = "$RENT_POINT_SCREEN/{$NAV_ARGUMENT_RENT_POINT_ID}"
 
+// Информация о профиле
+const val PROFILE_SCREEN = "PROFILE_SCREEN"
+
 /////////////////////////////////
 // Экраны сотрудника
 /////////////////////////////////

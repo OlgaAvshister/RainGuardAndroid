@@ -75,7 +75,10 @@ fun CheckProductScreen(navController: NavHostController) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
                 is CheckProductViewModel.NavigationEvent.NavigateToScreen -> {
-                    navController.navigate(event.route)
+                    navController.navigate(event.route) {
+                        popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 }
                 CheckProductViewModel.NavigationEvent.NavigateBack -> {
                     navController.popBackStack()

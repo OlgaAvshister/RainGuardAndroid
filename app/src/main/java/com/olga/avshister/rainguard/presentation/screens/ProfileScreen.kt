@@ -29,6 +29,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.olga.avshister.rainguard.R
+import com.olga.avshister.rainguard.presentation.core.AUTH_PHONE_SCREEN
 import com.olga.avshister.rainguard.presentation.ui.components.PrimaryButton
 import com.olga.avshister.rainguard.presentation.viewmodel.ProfileViewModel
 
@@ -73,7 +74,7 @@ fun ProfileScreen(navController: NavController) {
                 PrimaryButton(
                     text = stringResource(R.string.logout),
                     onClick = {
-
+                        viewModel.onIntent(ProfileViewModel.Intent.Logout)
                     }
                 )
             }
@@ -90,6 +91,15 @@ fun ProfileScreen(navController: NavController) {
                 CircularProgressIndicator()
             }
         } else {
+            if (state.value.userIsLogged.not()) {
+                navController.navigate(AUTH_PHONE_SCREEN) {
+                    // Переходим на экран авторизации и удаляем все предыдущие экраны из бекстека
+                    popUpTo(0) {
+                        inclusive = true
+                    }
+                    launchSingleTop = true
+                }
+            }
             Column(
                 modifier = Modifier
                     .fillMaxSize()

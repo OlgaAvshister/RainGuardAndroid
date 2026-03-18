@@ -11,10 +11,12 @@ import com.olga.avshister.rainguard.data.profile.AuthRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointRepository
 import com.olga.avshister.rainguard.domain.Checkout
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SelectIdsViewModel(context: Context, val openToTake: Boolean): ViewModel() {
     private val authRepository: AuthRepository = AuthLocalRepository(context)
@@ -108,7 +110,7 @@ class SelectIdsViewModel(context: Context, val openToTake: Boolean): ViewModel()
         }
     }
 
-    private fun getSuggestedIds(rentPointId: Long): List<Long> {
+    private suspend fun getSuggestedIds(rentPointId: Long): List<Long> = withContext(Dispatchers.IO) {
         // Нужно создать такую структуру, в которой
         // articul (10234) - quantity (2)
         //          ids =
@@ -139,6 +141,6 @@ class SelectIdsViewModel(context: Context, val openToTake: Boolean): ViewModel()
             )
         }
 
-        return suggestedIds
+        suggestedIds
     }
 }

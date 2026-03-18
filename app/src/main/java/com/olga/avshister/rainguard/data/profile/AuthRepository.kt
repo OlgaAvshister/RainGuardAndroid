@@ -9,13 +9,13 @@ interface AuthRepository: CartRepository {
     fun auth(phone: String)
     fun auth(phone: String, code: String): Profile
 
-    fun logout()
+    suspend fun logout()
 
-    fun getProfile(): Profile?
+    suspend fun getProfile(): Profile?
     fun updateProfile(profile: Profile)
 
     fun updateCart(cart: Cart)
-    fun addCard(card: Card)
+    suspend fun addCard(card: Card)
 
     fun finishRent(timeNow: Long)
 }

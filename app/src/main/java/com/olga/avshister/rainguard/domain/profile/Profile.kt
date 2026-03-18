@@ -6,6 +6,7 @@ import com.olga.avshister.rainguard.domain.rent.Rent
 
 data class Profile(
     val id: Long,
+    val name: String?,
     val phone: String,
     val role: Role,
     val cart: Cart,
