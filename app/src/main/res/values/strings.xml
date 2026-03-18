@@ -23,7 +23,6 @@
     <!-- Карта -->
     <string name="has_not_active_rent">Оформите новую аренду для просмотра</string>
 
-
     <!-- Точка аренды/возврата -->
     <string name="work_schedule">Сегодня 11:00-19:00</string>
     <string name="tab_umbrella">Зонты</string>
@@ -94,5 +93,11 @@
     <string name="product_label_to_check">Товар</string>
     <string name="what_product_condition_title">Какое состояние у товара?</string>
     <string name="next_product_button">Следующий</string>
+
+    <!-- Профиль -->
+    <string name="profile_toolbar_title">Профиль</string>
+    <string name="user_first_name_label">Имя</string>
+    <string name="user_phone_label">Телефон</string>
+    <string name="user_property_not_specified">Не заполнено</string>
 
 </resources>
