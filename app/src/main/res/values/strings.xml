@@ -55,6 +55,11 @@
     <string name="cart_need_raincoat">Нужен дождевик</string>
     <string name="cart_need_umbrella">Нужен зонт</string>
 
+    <!-- Чекаут -->
+    <string name="checkout_your_choice">Ваш выбор</string>
+    <string name="checkout_total">Итого</string>
+    <string name="checkout_choose">Выбрать</string>
+
     <!-- Экран банковских карт -->
     <string name="card_added">Карта добавлена</string>
     <string name="select_pay_variant_toolbar">Выберите способ оплаты</string>

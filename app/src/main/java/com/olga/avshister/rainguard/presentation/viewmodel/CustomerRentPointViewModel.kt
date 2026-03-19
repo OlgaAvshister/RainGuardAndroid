@@ -184,6 +184,11 @@ class CustomerRentPointViewModel(
         }
     }
 
+    override fun onCleared() {
+        stopTimer()
+        super.onCleared()
+    }
+
     // ---------- Factory ----------
 
     class RentPointViewModelFactory(

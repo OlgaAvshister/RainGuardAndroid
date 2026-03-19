@@ -11,6 +11,7 @@ import com.olga.avshister.rainguard.data.profile.AuthRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointRepository
 import com.olga.avshister.rainguard.domain.Checkout
+import com.olga.avshister.rainguard.domain.rent.Rate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -102,7 +103,7 @@ class SelectIdsViewModel(context: Context, val openToTake: Boolean): ViewModel()
             }
             is Intent.ToCheckout -> {
                 val checkoutProducts = rentPointRepository.searchProducts(_state.value.suggestedIds, authRepository.getCurrentRentPointId())
-                checkoutRepository.setCheckout(Checkout(products = checkoutProducts, rate = Checkout.Rate.PER_MINUTE))
+                checkoutRepository.setCheckout(Checkout(products = checkoutProducts, rate = Rate.PER_MINUTE))
             }
             is Intent.GiveToCheck -> {
                 // todo: запомнить и затем перейти на след экран

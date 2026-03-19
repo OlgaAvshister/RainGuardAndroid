@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -50,8 +51,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.olga.avshister.rainguard.R
 import com.olga.avshister.rainguard.domain.Checkout
 import com.olga.avshister.rainguard.domain.products.Product
+import com.olga.avshister.rainguard.domain.rent.Rate
 import com.olga.avshister.rainguard.presentation.core.CARDS_SCREEN
 import com.olga.avshister.rainguard.presentation.state.BSheetContentState
 import com.olga.avshister.rainguard.presentation.ui.theme.RainGuardTheme
@@ -72,7 +75,7 @@ fun CheckoutScreen(
 
     val uiState by viewModel.uiState.collectAsState()
 
-    val rates = Checkout.Rate.entries
+    val rates = Rate.entries
     val pagerState = rememberPagerState(
         initialPage = uiState.selectedRateIndex,
         pageCount = { rates.size }
@@ -101,7 +104,7 @@ fun CheckoutScreen(
 
             // Заголовок секции товаров
             Text(
-                text = "Ваш выбор",
+                text = stringResource(R.string.checkout_your_choice),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
@@ -115,10 +118,12 @@ fun CheckoutScreen(
 
             // Нижняя панель с итогом
             BottomSummary(
+                rate = uiState.checkout.rate,
                 totalPrice = uiState.checkout.rate.priceValue * uiState.checkout.products.size,
                 productCount = uiState.checkout.products.size,
                 modifier = Modifier.fillMaxWidth(),
                 toCardsClicked = {
+                    viewModel.saveCheckout(uiState.checkout.rate)
                     onNextState(BSheetContentState.CardsState)
                 }
             )
@@ -129,7 +134,7 @@ fun CheckoutScreen(
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun RatePager(
-    rates: List<Checkout.Rate>,
+    rates: List<Rate>,
     pagerState: androidx.compose.foundation.pager.PagerState,
     modifier: Modifier = Modifier
 ) {
@@ -177,7 +182,7 @@ fun RatePager(
 
 @Composable
 fun RateCard(
-    rate: Checkout.Rate,
+    rate: Rate,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -205,7 +210,7 @@ fun RateCard(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "${rate.priceValue} ₽/мин",
+                text = "${rate.priceValue} ₽/${rate.timeUnit}",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color.White.copy(alpha = 0.9f)
@@ -344,6 +349,7 @@ fun ProductItem(
 
 @Composable
 fun BottomSummary(
+    rate: Rate,
     totalPrice: Int,
     productCount: Int,
     modifier: Modifier = Modifier,
@@ -364,12 +370,12 @@ fun BottomSummary(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Итого",
+                    text = stringResource(R.string.checkout_total),
                     fontSize = 16.sp,
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
                 )
                 Text(
-                    text = "$totalPrice ₽/мин",
+                    text = "$totalPrice ₽/${rate.timeUnit}",
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary
@@ -393,7 +399,7 @@ fun BottomSummary(
                     .width(120.dp)
             ) {
                 Text(
-                    text = "Выбрать",
+                    text = stringResource(R.string.checkout_choose),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -416,7 +422,7 @@ private fun pluralize(count: Int, one: String, few: String, many: String): Strin
 fun RateCardPreview() {
     RainGuardTheme {
         RateCard(
-            Checkout.Rate.PER_MINUTE,
+            Rate.PER_MINUTE,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 4.dp)
