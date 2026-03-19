@@ -334,6 +334,7 @@ fun MainContent(
             .fillMaxSize(),
         bottomBar = {
             BottomBar(
+                role = mapMainContentState.role,
                 onRentClicked = {
                     if (mapMainContentState.hasActiveRent) {
                         onBSheetContent(BSheetContentState.CurrentRentState)
@@ -449,7 +450,7 @@ fun MainContent(
 
 
 @Composable
-fun BottomBar(onRentClicked: () -> Unit, onProfileClicked: () -> Unit) {
+fun BottomBar(role: Role, onRentClicked: () -> Unit, onProfileClicked: () -> Unit) {
     Surface(
         shape = RoundedCornerShape(20.dp),
         shadowElevation = 8.dp,
@@ -465,8 +466,10 @@ fun BottomBar(onRentClicked: () -> Unit, onProfileClicked: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BottomBarItem(BottomBarItem.RENT) {
-                onRentClicked()
+            if (role == Role.CUSTOMER) {
+                BottomBarItem(BottomBarItem.RENT) {
+                    onRentClicked()
+                }
             }
             BottomBarItem(BottomBarItem.HOME) {
                 // мы уже здесь
