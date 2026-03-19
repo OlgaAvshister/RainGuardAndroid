@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -29,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.olga.avshister.rainguard.R
 import com.olga.avshister.rainguard.domain.products.Product
@@ -62,38 +65,52 @@ fun CustomerRentPointScreen(
         factory = CustomerRentPointViewModel.RentPointViewModelFactory(context, rentPoint)
     )
 
-    val filterState by viewModel.filterState.collectAsState()
-    val rentState by viewModel.rentState.collectAsState()
+    val customerRentPointState by viewModel.customerRentPointState.collectAsStateWithLifecycle()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .systemBarsPadding()
-            .imePadding()
-            .padding(12.dp)
-    ) {
-        if (viewModel.hasActiveRent()) {
-            ActiveRentBSheetContent(
-                rentPoint = rentPoint,
-                rentState = rentState,
-                onNextState = { onNextState(it) }
-            )
-        } else {
-            FiltersBSheetContent(
-                rentPoint = rentPoint,
-                state = filterState,
-                onIntent = {
-                    viewModel.onIntent(it)
-                },
-                onNextState = {
-                    onNextState(
-                        BSheetContentState.CatalogState(
-                            filter = filterState.filter,
-                            rentPointId = rentPoint.id
+    LaunchedEffect(Unit) {
+        viewModel.onIntent(Intent.LoadData)
+    }
+
+    if (customerRentPointState.loadingState) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    } else {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .systemBarsPadding()
+                .imePadding()
+                .padding(12.dp)
+        ) {
+            if (customerRentPointState.rentState.items.isNotEmpty()) {
+                ActiveRentBSheetContent(
+                    rentPoint = rentPoint,
+                    rentState = customerRentPointState.rentState,
+                    onNextState = { onNextState(it) }
+                )
+            } else {
+                FiltersBSheetContent(
+                    rentPoint = rentPoint,
+                    state = customerRentPointState,
+                    onIntent = {
+                        viewModel.onIntent(it)
+                    },
+                    onNextState = {
+                        onNextState(
+                            BSheetContentState.CatalogState(
+                                filter = customerRentPointState.filterState,
+                                rentPointId = rentPoint.id
+                            )
                         )
-                    )
-                }
-            )
+                    }
+                )
+            }
         }
     }
 }
@@ -102,7 +119,7 @@ fun CustomerRentPointScreen(
 @Composable
 private fun FiltersBSheetContent(
     rentPoint: RentPoint,
-    state: CustomerRentPointViewModel.FilterState,
+    state: CustomerRentPointViewModel.CustomerRentPointState,
     onIntent: (intent: Intent) -> Unit,
     onNextState: () -> Unit,
 ) {
@@ -220,7 +237,7 @@ private fun ActiveRentBSheetContent(
 
 @Composable
 fun UmbrellaContent(
-    state: CustomerRentPointViewModel.FilterState,
+    state: CustomerRentPointViewModel.CustomerRentPointState,
     onIntent: (Intent) -> Unit
 ) {
     Column(
@@ -235,7 +252,7 @@ fun UmbrellaContent(
                 stringResource(R.string.filter_type_select_folding) to Product.FormFactor.FOLDING,
                 stringResource(R.string.filter_type_select_stick) to Product.FormFactor.STICK
             ),
-            selected = state.filter.formFactor,
+            selected = state.filterState.formFactor,
             onSelected = {
                 onIntent(Intent.SelectFormFactor(it))
             }
@@ -247,7 +264,7 @@ fun UmbrellaContent(
                 stringResource(R.string.filter_print_select_yes) to Product.PrintType.WITH_PRINT,
                 stringResource(R.string.filter_print_select_no) to Product.PrintType.WITHOUT_PRINT
             ),
-            selected = state.filter.printType,
+            selected = state.filterState.printType,
             onSelected = {
                 onIntent(Intent.SelectPrintType(it))
             }
@@ -257,7 +274,7 @@ fun UmbrellaContent(
 
 @Composable
 fun RaincoatContent(
-    state: CustomerRentPointViewModel.FilterState,
+    state: CustomerRentPointViewModel.CustomerRentPointState,
     onIntent: (Intent) -> Unit
 ) {
     Column(
@@ -272,7 +289,7 @@ fun RaincoatContent(
                 stringResource(R.string.filter_type_select_jacket) to Product.FormFactor.JACKET,
                 stringResource(R.string.filter_type_select_raincoat) to Product.FormFactor.RAINCOAT
             ),
-            selected = state.filter.formFactor,
+            selected = state.filterState.formFactor,
             onSelected = {
                 onIntent(Intent.SelectFormFactor(it))
             }
@@ -284,7 +301,7 @@ fun RaincoatContent(
                 stringResource(R.string.filter_print_select_yes) to Product.PrintType.WITH_PRINT,
                 stringResource(R.string.filter_print_select_no) to Product.PrintType.WITHOUT_PRINT
             ),
-            selected = state.filter.printType,
+            selected = state.filterState.printType,
             onSelected = {
                 onIntent(Intent.SelectPrintType(it))
             }
@@ -299,7 +316,7 @@ fun RaincoatContent(
                 Product.Size.L.value to Product.Size.L,
                 Product.Size.XL.value to Product.Size.XL
             ),
-            selected = state.filter.size,
+            selected = state.filterState.size,
             onSelected = {
                 onIntent(Intent.SelectSize(it))
             }
