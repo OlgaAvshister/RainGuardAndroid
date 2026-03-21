@@ -9,6 +9,10 @@ import com.olga.avshister.rainguard.domain.rent.RentPoint
  * Репозиторий для получения данных о точках аренды с удаленного сервера
  */
 class RentPointRemoteRepository: RentPointRepository {
+    override suspend fun registerRentPoint(rentPoint: RentPoint) {
+        TODO("Not yet implemented")
+    }
+
     override fun getRentPoints(): List<RentPoint> {
         TODO("Not yet implemented")
     }

@@ -51,6 +51,7 @@ import androidx.navigation.NavHostController
 import com.olga.avshister.rainguard.R
 import com.olga.avshister.rainguard.domain.profile.Role
 import com.olga.avshister.rainguard.domain.rent.RentPoint
+import com.olga.avshister.rainguard.presentation.core.ADD_RENT_POINT_SCREEN
 import com.olga.avshister.rainguard.presentation.core.PROFILE_SCREEN
 import com.olga.avshister.rainguard.presentation.screens.owner.OwnerRentPointScreen
 import com.olga.avshister.rainguard.presentation.state.BSheetContentState

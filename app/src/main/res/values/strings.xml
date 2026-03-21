@@ -13,6 +13,7 @@
     <string name="next">Далее</string>
     <string name="back">Назад</string>
     <string name="logout">Выйти</string>
+    <string name="save_changes">Сохранить</string>
 
     <!-- Авторизация -->
     <string name="consent_personal_data">При входе или регистрации вы даете согласие на обработку своих персональных данных</string>
@@ -104,5 +105,12 @@
     <string name="user_first_name_label">Имя</string>
     <string name="user_phone_label">Телефон</string>
     <string name="user_property_not_specified">Не заполнено</string>
+
+    <!-- Создание новой точки аренла/возврата -->
+    <string name="add_rent_point_toolbar_title">Новый пункт выдачи</string>
+    <string name="add_rent_point_name">Название</string>
+    <string name="add_rent_point_address">Адрес</string>
+    <string name="add_rent_work_hours">Время работы</string>
+    <string name="add_rent_code">Код пункта</string>
 
 </resources>

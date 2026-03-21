@@ -8,6 +8,7 @@ data class RentPoint(
     val address: String,
     val latitude: Double,
     val longitude: Double,
+    val workHours: String,
     val availableProducts: List<Product>,
 )
 

@@ -19,6 +19,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
 import com.olga.avshister.rainguard.domain.profile.Role
+import com.olga.avshister.rainguard.presentation.core.ADD_RENT_POINT_SCREEN
 import com.olga.avshister.rainguard.presentation.core.AUTH_PHONE_SCREEN
 import com.olga.avshister.rainguard.presentation.core.MAP_SCREEN
 import com.olga.avshister.rainguard.presentation.core.NAV_ARGUMENT_PHONE_NUMBER
@@ -29,6 +30,7 @@ import com.olga.avshister.rainguard.presentation.screens.AuthPhoneScreen
 import com.olga.avshister.rainguard.presentation.screens.MapScreen
 import com.olga.avshister.rainguard.presentation.screens.ProfileScreen
 import com.olga.avshister.rainguard.presentation.screens.SmsCodeScreen
+import com.olga.avshister.rainguard.presentation.screens.owner.AddRentPointScreen
 import com.olga.avshister.rainguard.presentation.screens.stuff.CheckProductScreen
 import com.olga.avshister.rainguard.presentation.ui.theme.RainGuardTheme
 import com.yandex.mapkit.MapKitFactory
@@ -92,7 +94,7 @@ fun RainGuardApp() {
             }
 
             composable(PROFILE_SCREEN) { ProfileScreen(navController) }
-
+            composable(ADD_RENT_POINT_SCREEN) { AddRentPointScreen(navController) }
             /*composable(
                 route = RENT_POINT_SCREEN_PATH,
                 arguments = listOf(

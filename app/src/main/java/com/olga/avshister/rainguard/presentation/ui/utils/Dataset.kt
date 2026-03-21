@@ -12,8 +12,8 @@ import com.olga.avshister.rainguard.domain.rent.RentPoint
 import kotlin.random.Random
 
 object Dataset {
-    fun generateRentPoint(): List<RentPoint> {
-        return listOf(
+    fun generateRentPoint(): MutableList<RentPoint> {
+        return mutableListOf(
             rentPoint1,
             rentPoint2,
             rentPoint3,

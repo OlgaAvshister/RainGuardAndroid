@@ -56,4 +56,12 @@ const val PROFILE_SCREEN = "PROFILE_SCREEN"
 // Экран ввода инвентарного номера товара для проверки персоналом (продавцом)
 const val SELECT_PRODUCT_TO_CHECK_SCREEN = "SELECT_PRODUCT_TO_CHECK_SCREEN"
 
+
+/////////////////////////////////
+// Экраны владельца
+/////////////////////////////////
+
+// Экран создания нового пункта
+const val ADD_RENT_POINT_SCREEN = "ADD_RENT_POINT_SCREEN"
+
 //endregion

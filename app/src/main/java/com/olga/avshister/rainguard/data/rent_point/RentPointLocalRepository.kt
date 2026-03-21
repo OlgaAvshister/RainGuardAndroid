@@ -12,7 +12,7 @@ import com.olga.avshister.rainguard.presentation.ui.utils.Dataset.generateRentPo
  */
 object RentPointLocalRepository: RentPointRepository {
     const val RENT_POINT_LOCAL_REPOSITORY_TAG = "RENT_POINT_LOCAL_REPOSITORY_TAG"
-    private val allRentPoints: List<RentPoint> by lazy { generateRentPoint() }
+    private val allRentPoints: MutableList<RentPoint> by lazy { generateRentPoint() }
 
     val rentPoint1 = RentPoint(
         id = 1/*Random.nextLong()*/,
@@ -20,6 +20,7 @@ object RentPointLocalRepository: RentPointRepository {
         address = "Красная площадь, 1",
         latitude = 55.752511,
         longitude = 37.621570,
+        workHours = "Сегодня 11:00-19:00",
         availableProducts = generateProductsDataset()
     )
     val rentPoint2 = RentPoint(
@@ -28,6 +29,7 @@ object RentPointLocalRepository: RentPointRepository {
         address = "Улица Варварка, 6с1",
         latitude = 55.751670,
         longitude = 37.629053,
+        workHours = "Сегодня 11:00-19:00",
         availableProducts = generateProductsDataset()
     )
 
@@ -37,8 +39,13 @@ object RentPointLocalRepository: RentPointRepository {
         address = "Улица Крымский Вал, 9",
         latitude = 55.731411,
         longitude = 37.601792,
+        workHours = "Сегодня 11:00-19:00",
         availableProducts = generateProductsDataset()
     )
+
+    override suspend fun registerRentPoint(rentPoint: RentPoint) {
+        allRentPoints.add(rentPoint)
+    }
 
 
     override fun getRentPoints(): List<RentPoint> {
