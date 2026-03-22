@@ -18,12 +18,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -58,6 +62,8 @@ import com.olga.avshister.rainguard.presentation.state.BSheetContentState
 import com.olga.avshister.rainguard.presentation.state.MapMainContentState
 import com.olga.avshister.rainguard.presentation.ui.TextImageProvider
 import com.olga.avshister.rainguard.presentation.ui.components.LabelRounded
+import com.olga.avshister.rainguard.presentation.ui.theme.Black
+import com.olga.avshister.rainguard.presentation.ui.theme.White
 import com.olga.avshister.rainguard.presentation.viewmodel.MapViewModel
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
@@ -351,7 +357,25 @@ fun MainContent(
                     navController.navigate(PROFILE_SCREEN)
                 }
             )
-        }
+        },
+        floatingActionButton = {
+            if (mapMainContentState.role == Role.OWNER) {
+                FloatingActionButton(
+                    onClick = {
+                        navController.navigate(ADD_RENT_POINT_SCREEN)
+                    },
+                    containerColor = White,
+                    contentColor = Black,
+                    modifier = Modifier.padding(16.dp),
+                    shape = CircleShape
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = stringResource(R.string.add_rent_point_toolbar_title)
+                    )
+                }
+            }
+        },
     ) { paddingValues ->
         Box(
             modifier = Modifier
