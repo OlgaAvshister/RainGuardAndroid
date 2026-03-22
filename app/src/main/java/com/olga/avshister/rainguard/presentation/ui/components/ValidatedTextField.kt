@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,6 +24,9 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.olga.avshister.rainguard.presentation.ui.theme.Green
+import com.olga.avshister.rainguard.presentation.ui.theme.Red
+import com.olga.avshister.rainguard.presentation.ui.theme.White
 
 @Composable
 fun ValidatedTextField(
@@ -30,18 +34,22 @@ fun ValidatedTextField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
-    validator: ((String) -> ResultValidation)? = null,
+    validator: ((String) -> ValidationResult)? = null,
     isEnabled: Boolean = true
 ) {
     var isFocused by remember { mutableStateOf(false) }
 
     val validationResult = remember(value) {
-        validator?.invoke(value) ?: ResultValidation.Valid
+        if (isFocused.not() && value.isEmpty()) {
+            ValidationResult.Valid
+        } else {
+            validator?.invoke(value) ?: ValidationResult.Valid
+        }
     }
 
     val state = when {
         !isEnabled -> FieldState.Disabled
-        validationResult is ResultValidation.Error -> FieldState.Error
+        validationResult is ValidationResult.Error -> FieldState.Error
         value.isNotEmpty() && validator != null -> FieldState.Success
         isFocused -> FieldState.Focused
         else -> FieldState.Default
@@ -50,22 +58,26 @@ fun ValidatedTextField(
     val borderColor by animateColorAsState(
         targetValue = when (state) {
             FieldState.Default -> Color.Transparent
-            FieldState.Focused -> Color(0xFF6C3BFF)
-            FieldState.Success -> Color(0xFF00C853)
-            FieldState.Error -> Color(0xFFFF5252)
+            FieldState.Focused -> MaterialTheme.colorScheme.primary
+            FieldState.Success ->  Green
+            FieldState.Error -> Red
             FieldState.Disabled -> Color.Transparent
         }
     )
 
-    val backgroundColor = Color(0xFFF2F2F2)
+    val backgroundColor = if (state == FieldState.Default) {
+        MaterialTheme.colorScheme.secondary
+    } else {
+        MaterialTheme.colorScheme.onPrimary
+    }
 
     Column(modifier = modifier) {
         Text(
             text = label,
             fontSize = 14.sp,
             color = when (state) {
-                FieldState.Error -> Color(0xFFFF5252)
-                FieldState.Focused -> Color(0xFF6C3BFF)
+                FieldState.Error -> Red
+                FieldState.Focused -> MaterialTheme.colorScheme.primary
                 else -> Color.Gray
             },
             modifier = Modifier.padding(start = 16.dp, bottom = 6.dp)
@@ -98,7 +110,7 @@ fun ValidatedTextField(
             )
         }
 
-        if (validationResult is ResultValidation.Error) {
+        if (validationResult is ValidationResult.Error) {
             Text(
                 text = validationResult.message,
                 color = Color(0xFFFF5252),
@@ -110,9 +122,9 @@ fun ValidatedTextField(
 }
 
 
-sealed class ResultValidation {
-    object Valid : ResultValidation()
-    data class Error(val message: String) : ResultValidation()
+sealed class ValidationResult {
+    object Valid : ValidationResult()
+    data class Error(val message: String) : ValidationResult()
 }
 
 private enum class FieldState {
