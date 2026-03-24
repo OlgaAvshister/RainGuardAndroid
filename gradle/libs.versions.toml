@@ -22,6 +22,7 @@ androidxFoundationLayout = "1.10.3"
 toolsCore = "1.0.0-alpha14"
 androidxFoundation = "1.10.3"
 yandex-maps = "4.29.0-lite"
+mpandroidchart = "3.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -55,6 +56,7 @@ foundation-layout = { group = "androidx.compose.foundation", name = "foundation-
 androidx-tools-core = { group = "androidx.privacysandbox.tools", name = "tools-core", version.ref = "toolsCore" }
 foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "androidxFoundation" }
 yandex-maps-mobile = { group = "com.yandex.android", name = "maps.mobile", version.ref = "yandex-maps" }
+mpandroidchart = { group = "com.github.PhilJay", name = "MPAndroidChart", version.ref = "mpandroidchart" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

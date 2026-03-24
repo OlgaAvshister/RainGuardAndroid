@@ -10,10 +10,12 @@ interface RentPointRepository {
     fun getRentPoints(): List<RentPoint>
     fun getRentPointById(id: Long): RentPoint?
 
-    fun searchProducts(filter: Filter, rentPointId: Long): List<Product>
+    fun searchProducts(filter: Filter?, rentPointId: Long): List<Product>
     fun searchProducts(articul: Long, rentPointId: Long): List<Product>
 
     fun searchProducts(ids: List<Long>, rentPointId: Long): List<Product>
+
+    fun deleteRentPoint(rentPointId: Long)
 
     /**
      * Завершить аренду в выбранной точке возврата.
@@ -23,6 +25,6 @@ interface RentPointRepository {
     fun finishRent(rentId: Long, rentPointId: Long, products: List<Product>, finishTime: Long)
 
     fun addStuff(firstName: String, phone: String)
-    fun addProduct(product: Product)
-    fun getCompletedRents(): List<Rent>
+    fun addProduct(rentPointId: Long, product: Product)
+    fun getCompletedRents(rentPointId: Long): List<Rent>
 }

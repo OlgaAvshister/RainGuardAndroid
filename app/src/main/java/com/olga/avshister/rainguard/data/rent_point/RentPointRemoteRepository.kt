@@ -21,7 +21,7 @@ class RentPointRemoteRepository: RentPointRepository {
         TODO("Not yet implemented")
     }
 
-    override fun searchProducts(filter: Filter, rentPointId: Long): List<Product> {
+    override fun searchProducts(filter: Filter?, rentPointId: Long): List<Product> {
         TODO("Not yet implemented")
     }
 
@@ -33,6 +33,10 @@ class RentPointRemoteRepository: RentPointRepository {
     }
 
     override fun searchProducts(ids: List<Long>, rentPointId: Long): List<Product> {
+        TODO("Not yet implemented")
+    }
+
+    override fun deleteRentPoint(rentPointId: Long) {
         TODO("Not yet implemented")
     }
 
@@ -49,11 +53,11 @@ class RentPointRemoteRepository: RentPointRepository {
         TODO("Not yet implemented")
     }
 
-    override fun addProduct(product: Product) {
+    override fun addProduct(rentPointId: Long, product: Product) {
         TODO("Not yet implemented")
     }
 
-    override fun getCompletedRents(): List<Rent> {
+    override fun getCompletedRents(rentPointId: Long): List<Rent> {
         TODO("Not yet implemented")
     }
 }

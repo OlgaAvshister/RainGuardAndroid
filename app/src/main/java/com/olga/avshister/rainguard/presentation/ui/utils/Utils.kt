@@ -1,6 +1,8 @@
 package com.olga.avshister.rainguard.presentation.ui.utils
 
 import android.util.Log
+import com.olga.avshister.rainguard.R
+import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.domain.rent.Rate
 import kotlin.math.ceil
 
@@ -37,5 +39,54 @@ object Utils {
         }
         Log.d("CALCULATE_COST", "cost=$cost")
         return cost
+    }
+
+    fun getImageResource(productType: Product.ProductType, colors: Product.Colors): Int {
+        var resId: Int = -1
+
+        when (productType) {
+            Product.ProductType.UMBRELLA -> {
+                resId = when (colors) {
+                    Product.Colors.RED -> {
+                        R.drawable.ic_umbrella_red
+                    }
+
+                    Product.Colors.YELLOW -> {
+                        R.drawable.ic_umbrella_yellow
+                    }
+
+                    Product.Colors.WHITE -> {
+                        R.drawable.ic_umbrella_white
+                    }
+
+                    Product.Colors.GREEN -> {
+                        R.drawable.ic_umbrella_green
+                    }
+
+                    Product.Colors.BLACK -> {
+                        R.drawable.ic_umbrella_black
+                    }
+
+                    Product.Colors.PURPLE -> {
+                        R.drawable.ic_umbrella_purple
+                    }
+                }
+            }
+
+            Product.ProductType.RAINCOAT -> {
+                resId = when (colors) {
+                    Product.Colors.RED -> {
+                        R.drawable.ic_raincoat_red
+                    }
+                    Product.Colors.YELLOW -> {
+                        R.drawable.ic_raincoat_yellow
+                    }
+                    else -> {
+                        throw IllegalArgumentException("Недопустимый цвет для дождевика")
+                    }
+                }
+            }
+        }
+        return resId
     }
 }

@@ -106,11 +106,15 @@
     <string name="user_phone_label">Телефон</string>
     <string name="user_property_not_specified">Не заполнено</string>
 
-    <!-- Создание новой точки аренла/возврата -->
+    <!-- Создание новой точки аренды/возврата -->
     <string name="add_rent_point_toolbar_title">Новый пункт выдачи</string>
     <string name="add_rent_point_name">Название</string>
     <string name="add_rent_point_address">Адрес</string>
     <string name="add_rent_work_hours">Время работы</string>
-    <string name="add_rent_code">Код пункта</string>
+
+    <!-- Точка аренды/возврата для владельца -->
+    <string name="owner_add_stuff_label">Добавить сотрудника</string>
+    <string name="owner_add_stuff_name">Имя</string>
+    <string name="owner_add_stuff_phone">Телефон</string>
 
 </resources>

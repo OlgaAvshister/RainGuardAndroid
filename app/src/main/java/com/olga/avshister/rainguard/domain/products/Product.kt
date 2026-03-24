@@ -12,6 +12,7 @@ data class Product(
     val color: Colors,
     val formFactor: FormFactor, // FOLDING (складывающийся)/STICK (трость) для зонта; JACKET (куртка)/ FULLBODY_RAINCOAT для дождевика на всё тело
     val size: Size?, // только для дождевика
+    val condition: ProductCondition? = ProductCondition.READY // состояние товара
 ) {
 
     enum class ProductType (val value: String) {

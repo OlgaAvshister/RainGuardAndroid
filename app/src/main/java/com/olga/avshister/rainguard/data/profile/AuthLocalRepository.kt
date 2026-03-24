@@ -140,6 +140,10 @@ class AuthLocalRepository(context: Context): AuthRepository {
         return prefs.setLong(KEY_CURRENT_RENT_POINT_ID, id)
     }
 
+    override fun addStuff(name: String, phone: String) {
+        registerUser(name = name, phone = phone, role = Role.STUFF)
+    }
+
     private fun isUserExist(phone: String): Boolean {
         return getAllProfiles().find { it.phone == phone }?.let { true } ?: false
     }
@@ -164,18 +168,21 @@ class AuthLocalRepository(context: Context): AuthRepository {
 
     private fun registerAndAuthUser(phone: String): Profile {
         Log.d("registerAndAuthUser", "phone=$phone")
+        registerUser(phone = phone)
+        return authUser(phone)
+    }
+
+    private fun registerUser(name: String? = null, phone: String, role: Role? = null) {
         val createdProfile = Profile(
             id = Random.nextLong(),
-            name = null,
+            name = name,
             phone = phone,
-            role = getMockProfileRole(phone),
+            role = role ?: getMockProfileRole(phone),
             cart = Cart(products = emptyList()),
             cards = emptyList(),
             activeRent = null,
         )
-
         updateProfile(createdProfile)
-        return authUser(phone)
     }
 
     private fun sendSmsStub(phone: String) {

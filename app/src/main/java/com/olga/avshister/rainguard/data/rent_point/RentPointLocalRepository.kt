@@ -56,7 +56,7 @@ object RentPointLocalRepository: RentPointRepository {
         return runCatching { getRentPoints().first { it.id == id } }.getOrNull()
     }
 
-    override fun searchProducts(filter: Filter, rentPointId: Long): List<Product> {
+    override fun searchProducts(filter: Filter?, rentPointId: Long): List<Product> {
         return allRentPoints
             .find { it.id == rentPointId }
             ?.availableProducts
@@ -79,6 +79,11 @@ object RentPointLocalRepository: RentPointRepository {
             ?.filter { it.id in ids } ?: emptyList()
     }
 
+    override fun deleteRentPoint(rentPointId: Long) {
+        val index = allRentPoints.indexOfFirst { it.id == rentPointId }
+        allRentPoints.removeAt(index)
+    }
+
     override fun finishRent(
         rentId: Long,
         rentPointId: Long,
@@ -92,12 +97,25 @@ object RentPointLocalRepository: RentPointRepository {
         TODO("Not yet implemented")
     }
 
-    override fun addProduct(product: Product) {
-        TODO("Not yet implemented")
+    override fun addProduct(rentPointId: Long, product: Product) {
+        val index = allRentPoints.indexOfFirst { it.id == rentPointId }
+        val initialRentPoint = allRentPoints[index]
+        val modifiedAvailableProducts = initialRentPoint.availableProducts.toMutableList()
+        .apply {
+            add(product)
+        }
+        .toList()
+
+        val modifiedRentPoint = initialRentPoint.copy(
+            availableProducts = modifiedAvailableProducts
+        )
+
+        allRentPoints[index] = modifiedRentPoint
     }
 
-    override fun getCompletedRents(): List<Rent> {
-        TODO("Not yet implemented")
+    override fun getCompletedRents(rentPointId: Long): List<Rent> {
+        // todo: сделать отдельный репозиторий под завершенные аренды. в этом репозитории наверное нехорошо хранить? т.к. аренда може тбыть начата в одном пункте, а завершена в другом
+        return emptyList()
     }
 
     /**
@@ -105,7 +123,11 @@ object RentPointLocalRepository: RentPointRepository {
      * Если какой-то параметр в фильтре не указан - то считаем, что товар соответсвует фильтру
      * и нужно проверить остальные параметры
      */
-    private fun matchesFilter(product: Product, filter: Filter): Boolean {
+    private fun matchesFilter(product: Product, filter: Filter?): Boolean {
+        // если фильтр не задан, то товар автоматически соответствует фильтру
+        if (filter == null)
+            return true
+
         if (filter.productType != null && filter.productType != product.productType) {
             return false
         }

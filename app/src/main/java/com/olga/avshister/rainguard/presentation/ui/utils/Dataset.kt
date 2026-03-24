@@ -9,6 +9,7 @@ import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository.ren
 import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.domain.products.Product.Companion.withGeneratedArticul
 import com.olga.avshister.rainguard.domain.rent.RentPoint
+import com.olga.avshister.rainguard.presentation.ui.utils.Utils.getImageResource
 import kotlin.random.Random
 
 object Dataset {
@@ -41,54 +42,6 @@ object Dataset {
     }
 
     private fun generateProduct(): Product {
-        fun getImageResource(productType: Product.ProductType, colors: Product.Colors): Int {
-            var resId: Int = -1
-
-            when (productType) {
-                Product.ProductType.UMBRELLA -> {
-                    resId = when (colors) {
-                        Product.Colors.RED -> {
-                            R.drawable.ic_umbrella_red
-                        }
-
-                        Product.Colors.YELLOW -> {
-                            R.drawable.ic_umbrella_yellow
-                        }
-
-                        Product.Colors.WHITE -> {
-                            R.drawable.ic_umbrella_white
-                        }
-
-                        Product.Colors.GREEN -> {
-                            R.drawable.ic_umbrella_green
-                        }
-
-                        Product.Colors.BLACK -> {
-                            R.drawable.ic_umbrella_black
-                        }
-
-                        Product.Colors.PURPLE -> {
-                            R.drawable.ic_umbrella_purple
-                        }
-                    }
-                }
-
-                Product.ProductType.RAINCOAT -> {
-                    resId = when (colors) {
-                        Product.Colors.RED -> {
-                            R.drawable.ic_raincoat_red
-                        }
-                        Product.Colors.YELLOW -> {
-                            R.drawable.ic_raincoat_yellow
-                        }
-                        else -> {
-                            throw IllegalArgumentException("Недопустимый цвет для дождевика")
-                        }
-                    }
-                }
-            }
-            return resId
-        }
 
         fun generateProductType(): Product.ProductType {
             return Product.ProductType.values().random()
@@ -111,6 +64,7 @@ object Dataset {
                     Product.FormFactor.STICK,
                 ).random(),
                 size = null,
+                condition = Product.ProductCondition.values().random()
             ).withGeneratedArticul()
         }
 

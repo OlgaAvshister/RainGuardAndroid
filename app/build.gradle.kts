@@ -84,6 +84,9 @@ dependencies {
     implementation(libs.androidx.tools.core)
     implementation(libs.foundation)
 
+    // зависимость для отображения диаграмм, графиков
+    implementation(libs.mpandroidchart)
+
     // Yandex MapKit - для отображения карт и объектов на ней
     implementation(libs.yandex.maps.mobile)
 
