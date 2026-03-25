@@ -6,10 +6,14 @@ import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository.REN
 import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository.rentPoint1
 import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository.rentPoint2
 import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository.rentPoint3
+import com.olga.avshister.rainguard.domain.payment.Card
 import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.domain.products.Product.Companion.withGeneratedArticul
+import com.olga.avshister.rainguard.domain.rent.Rate
+import com.olga.avshister.rainguard.domain.rent.Rent
 import com.olga.avshister.rainguard.domain.rent.RentPoint
 import com.olga.avshister.rainguard.presentation.ui.utils.Utils.getImageResource
+import kotlin.math.ceil
 import kotlin.random.Random
 
 object Dataset {
@@ -81,6 +85,7 @@ object Dataset {
                     Product.FormFactor.RAINCOAT,
                 ).random(),
                 size = Product.Size.values().random(),
+                condition = Product.ProductCondition.values().random()
             ).withGeneratedArticul()
         }
 
@@ -92,5 +97,227 @@ object Dataset {
                 generateRaincoat()
             }
         }
+    }
+
+    // Метод для генерации данных о завершенных арендах (для проверки корректности отработки фронта)
+    fun generateCompletedRents(): List<Rent> {
+        val rents = mutableListOf<Rent>()
+        val now = System.currentTimeMillis()
+        val tenDaysInMillis = 10L * 24 * 60 * 60 * 1000
+        val tenDaysAgo = now - tenDaysInMillis
+
+        // Генерируем от 5 до 10 аренд
+        val rentsCount = Random.nextInt(5, 11)
+
+        repeat(rentsCount) {
+            // Генерируем случайное время начала аренды за последние 10 дней
+            val startedAt = Random.nextLong(tenDaysAgo, now)
+
+            // Генерируем продолжительность аренды от 1 минуты до 3 дней
+            val durationMinutes = when (Random.nextInt(1, 4)) {
+                1 -> Random.nextInt(1, 60) // от 1 до 60 минут
+                2 -> Random.nextInt(60, 24 * 60) // от 1 до 24 часов
+                else -> Random.nextInt(24 * 60, 72 * 60) // от 1 до 3 дней
+            }
+
+            val durationMillis = durationMinutes * 60 * 1000L
+            val completedAt = startedAt + durationMillis
+
+            // Генерируем случайный тариф
+            val rate = when (Random.nextInt(0, 3)) {
+                0 -> Rate.PER_MINUTE
+                1 -> Rate.PER_HOUR
+                else -> Rate.PER_DAY
+            }
+
+            // Генерируем количество товаров от 1 до 5
+            val productsCount = Random.nextInt(1, 6)
+            val products = generateRandomProducts(productsCount)
+
+            // Создаем случайную карту
+            val card = generateRandomCard()
+
+            // Генерируем случайного клиента
+            val customerId = Random.nextLong(1000, 10000)
+
+            rents.add(
+                Rent(
+                    customerId = customerId,
+                    startedAt = startedAt,
+                    completedAt = completedAt,
+                    products = products,
+                    selectedPaymentCard = card,
+                    rate = rate
+                )
+            )
+        }
+
+        // Сортируем по времени завершения (от новых к старым)
+        return rents.sortedByDescending { it.completedAt }
+    }
+
+    /**
+     * Генерация случайного списка товаров
+     */
+    private fun generateRandomProducts(count: Int): List<Product> {
+        val products = mutableListOf<Product>()
+
+        repeat(count) {
+            products.add(generateProduct())
+        }
+
+        return products
+    }
+
+
+
+    /**
+     * Генерация случайной карты
+     */
+    private fun generateRandomCard(): Card {
+        val cardNumber = generateRandomCardNumber()
+        val expired = generateRandomExpiryDate()
+        val cvv = Random.nextInt(100, 999)
+
+        return Card(
+            number = cardNumber,
+            expired = expired,
+            cvv = cvv
+        )
+    }
+
+    /**
+     * Генерация случайного номера карты
+     */
+    private fun generateRandomCardNumber(): String {
+        val prefixes = listOf("4532", "4916", "5280", "6011", "3782")
+        val prefix = prefixes.random()
+        val remaining = (1..12).map { Random.nextInt(0, 10) }.joinToString("")
+        return "$prefix$remaining"
+    }
+
+    /**
+     * Генерация случайной даты истечения срока (от 2024 до 2028)
+     */
+    private fun generateRandomExpiryDate(): String {
+        val month = Random.nextInt(1, 13).toString().padStart(2, '0')
+        val year = Random.nextInt(24, 29)
+        return "$month/$year"
+    }
+
+    /**
+     * Возвращает случайный ID изображения для зонта
+     */
+    private fun getRandomImageForUmbrella(): Int {
+        val umbrellaImages = listOf(
+            R.drawable.ic_umbrella_black,
+            R.drawable.ic_umbrella_red,
+            R.drawable.ic_umbrella_white,
+            R.drawable.ic_umbrella_green
+        )
+        return umbrellaImages.random()
+    }
+
+    /**
+     * Возвращает случайный ID изображения для дождевика
+     */
+    private fun getRandomImageForRaincoat(): Int {
+        val raincoatImages = listOf(
+            R.drawable.ic_raincoat_yellow,
+            R.drawable.ic_raincoat_red,
+        )
+        return raincoatImages.random()
+    }
+
+    // Расширение для расчета стоимости аренды
+    fun Rent.calculateTotalCost(): Int {
+        val durationMillis = completedAt!! - startedAt
+        val durationMinutes = durationMillis / (60 * 1000.0)
+
+        val billedUnits = when (rate) {
+            Rate.PER_MINUTE -> ceil(durationMinutes).toInt()
+            Rate.PER_HOUR -> ceil(durationMinutes / 60.0).toInt()
+            Rate.PER_DAY -> ceil(durationMinutes / (60.0 * 24)).toInt()
+        }
+
+        return billedUnits * rate.priceValue * products.size
+    }
+
+    // Альтернативная версия с более реалистичными данными
+    fun generateCompletedRentsAdvanced(): List<Rent> {
+        val rents = mutableListOf<Rent>()
+        val now = System.currentTimeMillis()
+        val tenDaysInMillis = 10L * 24 * 60 * 60 * 1000
+        val tenDaysAgo = now - tenDaysInMillis
+
+        val rentsCount = Random.nextInt(5, 11)
+
+        // Реалистичные распределения для разных сценариев
+        val rentScenarios = listOf(
+            RentScenario.SHORT_SHOPPING,    // 15-30 минут
+            RentScenario.MOVIE,              // 2-3 часа
+            RentScenario.WALK,               // 1-2 часа
+            RentScenario.WORK_DAY,           // 8-10 часов
+            RentScenario.WEEKEND_TRIP        // 2-3 дня
+        )
+
+        repeat(rentsCount) {
+            val scenario = rentScenarios.random()
+            val startedAt = Random.nextLong(tenDaysAgo, now)
+
+            // Продолжительность в зависимости от сценария
+            val durationMinutes = when (scenario) {
+                RentScenario.SHORT_SHOPPING -> Random.nextInt(15, 31)
+                RentScenario.MOVIE -> Random.nextInt(120, 181)
+                RentScenario.WALK -> Random.nextInt(60, 121)
+                RentScenario.WORK_DAY -> Random.nextInt(480, 601)
+                RentScenario.WEEKEND_TRIP -> Random.nextInt(2880, 4321) // 2-3 дня
+            }
+
+            val completedAt = startedAt + durationMinutes * 60 * 1000L
+
+            // Тариф в зависимости от продолжительности
+            val rate = when (durationMinutes) {
+                in 0..60 -> Rate.PER_MINUTE
+                in 61..1440 -> Rate.PER_HOUR
+                else -> Rate.PER_DAY
+            }
+
+            // Количество товаров в зависимости от сценария
+            val productsCount = when (scenario) {
+                RentScenario.SHORT_SHOPPING -> Random.nextInt(1, 3)
+                RentScenario.MOVIE, RentScenario.WALK -> Random.nextInt(1, 4)
+                RentScenario.WORK_DAY -> Random.nextInt(2, 5)
+                RentScenario.WEEKEND_TRIP -> Random.nextInt(2, 6)
+            }
+
+            val products = generateRandomProducts(productsCount)
+
+            // Генерируем случайного клиента с повторяющимися ID для реалистичности
+            val customerId = listOf(1001L, 1002L, 1003L, 1004L, 1005L).random()
+
+            val card = generateRandomCard()
+
+            rents.add(
+                Rent(
+                    customerId = customerId,
+                    startedAt = startedAt,
+                    completedAt = completedAt,
+                    products = products,
+                    selectedPaymentCard = card,
+                    rate = rate
+                )
+            )
+        }
+
+        return rents.sortedByDescending { it.completedAt }
+    }
+
+    enum class RentScenario {
+        SHORT_SHOPPING,
+        MOVIE,
+        WALK,
+        WORK_DAY,
+        WEEKEND_TRIP
     }
 }

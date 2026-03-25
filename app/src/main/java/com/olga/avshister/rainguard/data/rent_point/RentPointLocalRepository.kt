@@ -4,6 +4,7 @@ import com.olga.avshister.rainguard.domain.filter.Filter
 import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.domain.rent.Rent
 import com.olga.avshister.rainguard.domain.rent.RentPoint
+import com.olga.avshister.rainguard.presentation.ui.utils.Dataset.generateCompletedRents
 import com.olga.avshister.rainguard.presentation.ui.utils.Dataset.generateProductsDataset
 import com.olga.avshister.rainguard.presentation.ui.utils.Dataset.generateRentPoint
 
@@ -115,7 +116,7 @@ object RentPointLocalRepository: RentPointRepository {
 
     override fun getCompletedRents(rentPointId: Long): List<Rent> {
         // todo: сделать отдельный репозиторий под завершенные аренды. в этом репозитории наверное нехорошо хранить? т.к. аренда може тбыть начата в одном пункте, а завершена в другом
-        return emptyList()
+        return generateCompletedRents()
     }
 
     /**
