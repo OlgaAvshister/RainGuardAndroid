@@ -439,7 +439,7 @@ fun MainContent(
                     CameraPosition(
                         initialPoint,
                         12.0f,
-                        150.0f,
+                        0.0f,
                         30.0f
                     )
                 )

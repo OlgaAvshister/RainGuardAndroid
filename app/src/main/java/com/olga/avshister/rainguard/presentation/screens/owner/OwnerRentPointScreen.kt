@@ -65,7 +65,7 @@ fun OwnerRentPointScreen(
             item {
                 HeaderRentPoint(
                     title = uiState.rentPoint?.name,
-                    address = uiState.rentPoint?.name,
+                    address = uiState.rentPoint?.address,
                     openingHours = uiState.rentPoint?.workHours ?: ""
                 )
             }

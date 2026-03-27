@@ -21,7 +21,7 @@ accompanist = "0.34.0"
 androidxFoundationLayout = "1.10.3"
 toolsCore = "1.0.0-alpha14"
 androidxFoundation = "1.10.3"
-yandex-maps = "4.29.0-lite"
+yandex-maps = "4.29.0-full"
 mpandroidchart = "3.1.0"
 
 [libraries]
