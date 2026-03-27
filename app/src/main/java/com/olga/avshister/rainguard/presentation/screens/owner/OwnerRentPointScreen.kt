@@ -47,7 +47,6 @@ fun OwnerRentPointScreen(
                 is OwnerEvent.RentPointDeleted -> {
                     onNextState(BSheetContentState.IdleState)
                 }
-                else -> {}
             }
         }
     }

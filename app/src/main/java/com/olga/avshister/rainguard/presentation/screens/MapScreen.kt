@@ -66,6 +66,7 @@ import com.olga.avshister.rainguard.presentation.ui.theme.White
 import com.olga.avshister.rainguard.presentation.viewmodel.MapViewModel
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
+import com.yandex.mapkit.map.ClusterizedPlacemarkCollection
 import com.yandex.mapkit.map.MapObjectTapListener
 import com.yandex.mapkit.mapview.MapView
 import com.yandex.runtime.image.ImageProvider
@@ -324,6 +325,7 @@ fun MainContent(
 ) {
     val context = LocalContext.current
     val mapView = remember { mutableStateOf<MapView?>(null) }
+    val clusterizedCollection = remember { mutableStateOf<ClusterizedPlacemarkCollection?>(null) }
 
     val initialPoint = Point(55.752511, 37.621570)
 
@@ -331,15 +333,16 @@ fun MainContent(
         val rentPointState = when (mapMainContentState.role) {
             Role.CUSTOMER -> BSheetContentState.RentPointState(rentPoint.userData as RentPoint)
             Role.OWNER -> BSheetContentState.OwnerRentPointState(rentPoint.userData as RentPoint)
-            else -> { throw IllegalArgumentException("Interaction with the map must be as a Customer or Owner only") }
+            else -> {
+                throw IllegalArgumentException("Interaction with the map must be as a Customer or Owner only")
+            }
         }
         onBSheetContent(rentPointState)
         true
     }
 
     Scaffold(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize(),
         bottomBar = {
             BottomBar(
                 role = mapMainContentState.role,
@@ -379,8 +382,7 @@ fun MainContent(
         },
     ) { paddingValues ->
         Box(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             AndroidView(
@@ -389,10 +391,8 @@ fun MainContent(
                         mapView.value = this
                     }
                 },
-                modifier = Modifier
-                    .fillMaxSize()
-            ) { mapView ->
-            }
+                modifier = Modifier.fillMaxSize()
+            )
         }
 
         if (mapMainContentState.hasActiveRent) {
@@ -443,33 +443,48 @@ fun MainContent(
                         30.0f
                     )
                 )
+
+                clusterizedCollection.value =
+                    mapView.mapWindow.map.mapObjects.addClusterizedPlacemarkCollection { cluster ->
+                        cluster.appearance.setIcon(
+                            TextImageProvider(
+                                context,
+                                cluster.size.toString(),
+                                R.drawable.ic_placemark
+                            )
+                        )
+                    }
             }
         }
 
-        mapView.value?.let { mapView ->
-            val clusterizedCollection =
-                mapView.mapWindow.map.mapObjects.addClusterizedPlacemarkCollection { cluster ->
-                    cluster.appearance.setIcon(
-                        TextImageProvider(
-                            context,
-                            cluster.size.toString(),
-                            R.drawable.ic_placemark
-                        )
-                    )
-                }
+        // Обновляем placemark'ы при изменении списка пунктов выдачи
+        LaunchedEffect(mapMainContentState.rentPoints, clusterizedCollection.value) {
+            val collection = clusterizedCollection.value
+            val rentPoints = mapMainContentState.rentPoints
 
-            val imageProvider = ImageProvider.fromResource(context, R.drawable.ic_placemark)
+            Log.d("MAP_SCREEN", "LaunchedEffect triggered: collection=$collection, rentPoints size=${rentPoints.size}")
 
-            Log.d("MAP_SCREEN", "adding placemarks: rent points number=${mapMainContentState.rentPoints.size}")
-            mapMainContentState.rentPoints.forEach { rentPoint ->
-                clusterizedCollection.addPlacemark().apply {
-                    geometry = Point(rentPoint.latitude, rentPoint.longitude)
-                    userData = rentPoint
-                    addTapListener(placemarkTapListener)
-                    setIcon(imageProvider)
+            if (collection != null) {
+                collection.clear()
+
+                if (rentPoints.isNotEmpty()) {
+                    val imageProvider = ImageProvider.fromResource(context, R.drawable.ic_placemark)
+
+                    Log.d("MAP_SCREEN", "Updating placemarks: rent points number=${rentPoints.size}")
+                    rentPoints.forEach { rentPoint ->
+                        collection.addPlacemark().apply {
+                            geometry = Point(rentPoint.latitude, rentPoint.longitude)
+                            userData = rentPoint
+                            addTapListener(placemarkTapListener)
+                            setIcon(imageProvider)
+                        }
+                    }
+                    collection.clusterPlacemarks(60.0, 15)
+
+                } else {
+                    Log.d("MAP_SCREEN", "No rent points to display")
                 }
             }
-            clusterizedCollection.clusterPlacemarks(60.0, 15)
         }
     }
 }

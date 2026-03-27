@@ -40,30 +40,18 @@ class MapViewModel(application: Application): AndroidViewModel(application) {
 
     val mainContentState: StateFlow<MapMainContentState> = _state.asStateFlow()
 
-    init {
-        Log.d("MAP_SCREEN_VIEW_MODEL", "init start")
-        viewModelScope.launch {
-            authRepository.getProfile()?.let {
-                Log.d("MAP_SCREEN_VIEW_MODEL", "init: got profile=$it")
-                _state.value = _state.value.copy(
-                    isLoading = false,
-                    hasActiveRent = it.activeRent != null,
-                    role = it.role,
-                    rentPoints = getRentPoints()
-                )
-            }
-        }
-    }
-
     fun onIntent(bSheetState: BSheetContentState) {
         when (bSheetState) {
             BSheetContentState.IdleState -> {
                 viewModelScope.launch(Dispatchers.IO) {
+                    val rentPoints = getRentPoints().toList() // создаем новый объект для обновления состояния
+                    Log.d("onIntent", "MapViewModel, rentPoints size=${rentPoints.size},  rentPoints: $rentPoints")
                     authRepository.getProfile()?.let {
                         _state.value = _state.value.copy(
                             isLoading = false,
+                            role = it.role,
                             hasActiveRent = it.activeRent != null,
-                            rentPoints = getRentPoints()
+                            rentPoints = rentPoints
                         )
                     }
                 }
