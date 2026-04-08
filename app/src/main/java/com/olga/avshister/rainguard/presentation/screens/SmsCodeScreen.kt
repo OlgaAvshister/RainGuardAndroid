@@ -52,12 +52,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.olga.avshister.rainguard.R
-import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl
-import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
-import com.olga.avshister.rainguard.data.profile.AuthRepository
-import com.olga.avshister.rainguard.domain.profile.Role
 import com.olga.avshister.rainguard.presentation.core.MAP_SCREEN
-import com.olga.avshister.rainguard.presentation.core.SELECT_PRODUCT_TO_CHECK_SCREEN
 import com.olga.avshister.rainguard.presentation.ui.theme.RainGuardTheme
 import com.olga.avshister.rainguard.presentation.viewmodel.SmsCodeViewModel
 import kotlinx.coroutines.delay
@@ -107,45 +102,32 @@ fun SmsCodeScreen(navController: NavController, phoneNumber: String) {
         keyboardController?.show()
     }
 
-    // Проверка правильности кода
-    fun auth() {
-        val code = codeDigits.joinToString("")
-        runCatching {
-            viewModel.auth(phoneNumber, code)
-        }.getOrNull()?.let { profile ->
-            when (profile.role) {
-                Role.CUSTOMER -> {
+    LaunchedEffect(Unit) {
+        viewModel.action.collect { action ->
+            when (action) {
+                is SmsCodeViewModel.Action.NavigateToScreen-> {
                     navController.navigate(MAP_SCREEN) {
                         popUpTo(0) { inclusive = true }
                         launchSingleTop = true
                     }
                 }
-                Role.STUFF -> {
-                    navController.navigate(SELECT_PRODUCT_TO_CHECK_SCREEN) {
-                        popUpTo(0) { inclusive = true }
-                        launchSingleTop = true
+                is SmsCodeViewModel.Action.ShowError -> {
+                    // Неправильный код
+                    isError = true
+                    errorText = action.errorMessage
+                    infoText = context.getString(R.string.sms_try_again_msg)
+                    // очистить поля
+                    for (i in 0..3) {
+                        codeDigits[i] = ""
+                    }
+                    // вернуть фокус на первое поле
+                    scope.launch {
+                        focusRequesters[0].requestFocus()
                     }
                 }
-                Role.OWNER -> {
-                    navController.navigate(MAP_SCREEN) {
-                        popUpTo(0) { inclusive = true }
-                        launchSingleTop = true
-                    }
-                }
-            }
+                else -> {
 
-        } ?: run {
-            // Неправильный код
-            isError = true
-            errorText = context.getString(R.string.invalid_sms_code)
-            infoText = context.getString(R.string.sms_try_again_msg)
-            // очистить поля
-            for (i in 0..3) {
-                codeDigits[i] = ""
-            }
-            // вернуть фокус на первое поле
-            scope.launch {
-                focusRequesters[0].requestFocus()
+                }
             }
         }
     }
@@ -159,7 +141,12 @@ fun SmsCodeScreen(navController: NavController, phoneNumber: String) {
                 focusRequesters[index + 1].requestFocus()
             } else {
                 focusManager.clearFocus()
-                auth()
+                viewModel.onIntent(
+                    SmsCodeViewModel.Intent.Auth(
+                        phone = phoneNumber,
+                        code = codeDigits.joinToString("")
+                    )
+                )
             }
         } else {
             // если удалена цифра, оставляем пустой
@@ -205,7 +192,10 @@ fun SmsCodeScreen(navController: NavController, phoneNumber: String) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Назад")
+                Icon(
+                    Icons.Default.ArrowBack,
+                    contentDescription = stringResource(R.string.back)
+                )
             }
         }
 
@@ -215,7 +205,7 @@ fun SmsCodeScreen(navController: NavController, phoneNumber: String) {
         ) {
 
             Text(
-                text = if (isError) errorText else "Введите код из SMS",
+                text = if (isError) errorText else stringResource(R.string.fill_sms_code),
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,

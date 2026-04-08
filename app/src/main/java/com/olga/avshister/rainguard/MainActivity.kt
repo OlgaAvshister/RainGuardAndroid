@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
+import com.olga.avshister.rainguard.data.profile.AuthRemoteRepository
 import com.olga.avshister.rainguard.domain.profile.Role
 import com.olga.avshister.rainguard.presentation.core.ADD_RENT_POINT_SCREEN
 import com.olga.avshister.rainguard.presentation.core.AUTH_PHONE_SCREEN
@@ -126,7 +127,8 @@ fun RainGuardApp() {
 }
 
 suspend fun getStartDestination(context: Context) = withContext(Dispatchers.IO) {
-    AuthLocalRepository(context).getProfile()?.let {
+    //AuthLocalRepository(context).getProfile()?.let {
+    AuthRemoteRepository(context).getProfile()?.let {
         when (it.role) {
             Role.CUSTOMER -> {
                 MAP_SCREEN
@@ -136,6 +138,9 @@ suspend fun getStartDestination(context: Context) = withContext(Dispatchers.IO) 
             }
             Role.OWNER -> {
                 MAP_SCREEN
+            }
+            else -> {
+                AUTH_PHONE_SCREEN
             }
         }
     } ?: run {

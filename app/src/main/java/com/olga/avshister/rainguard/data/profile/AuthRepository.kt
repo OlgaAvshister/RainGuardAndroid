@@ -7,7 +7,7 @@ import com.olga.avshister.rainguard.domain.profile.Profile
 
 interface AuthRepository: CartRepository {
     fun auth(phone: String)
-    fun auth(phone: String, code: String): Profile
+    suspend fun auth(phone: String, code: String): Profile
 
     suspend fun logout()
 

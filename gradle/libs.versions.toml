@@ -23,6 +23,8 @@ toolsCore = "1.0.0-alpha14"
 androidxFoundation = "1.10.3"
 yandex-maps = "4.29.0-full"
 mpandroidchart = "3.1.0"
+retrofit = "2.9.0"
+okhttp = "4.12.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -57,6 +59,14 @@ androidx-tools-core = { group = "androidx.privacysandbox.tools", name = "tools-c
 foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "androidxFoundation" }
 yandex-maps-mobile = { group = "com.yandex.android", name = "maps.mobile", version.ref = "yandex-maps" }
 mpandroidchart = { group = "com.github.PhilJay", name = "MPAndroidChart", version.ref = "mpandroidchart" }
+
+# Retrofit и конвертор
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+retrofit-converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
+
+# OkHttp и логирование
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+okhttp-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -22,7 +22,7 @@ class AuthLocalRepository(context: Context): AuthRepository {
         sendSmsStub(phone)
     }
 
-    override fun auth(phone: String, code: String): Profile {
+    override suspend fun auth(phone: String, code: String): Profile {
         if (isCodeValid(code)) {
             val profile = if (isUserExist(phone)) {
                 authUser(phone)
