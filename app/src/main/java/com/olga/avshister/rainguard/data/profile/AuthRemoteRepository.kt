@@ -5,7 +5,7 @@ import com.olga.avshister.rainguard.data.network.AuthInterceptor.Companion.TOKEN
 import com.olga.avshister.rainguard.data.network.NetworkClient
 import com.olga.avshister.rainguard.data.network.TokenManager
 import com.olga.avshister.rainguard.data.network.auth.AuthRequest
-import com.olga.avshister.rainguard.data.network.auth.AuthResponse.Companion.toDomain
+import com.olga.avshister.rainguard.data.network.profile.Profile.Companion.toDomain
 import com.olga.avshister.rainguard.domain.cart.Cart
 import com.olga.avshister.rainguard.domain.payment.Card
 import com.olga.avshister.rainguard.domain.profile.Profile
@@ -26,7 +26,7 @@ class AuthRemoteRepository(val context: Context): AuthRepository {
         val token = response.headers()[TOKEN_HEADER]
         TokenManager(context).saveToken(token.orEmpty())
 
-        return response.body()!!.toDomain()
+        return response.body()?.user!!.toDomain()
     }
 
     override suspend fun logout() {
@@ -34,8 +34,7 @@ class AuthRemoteRepository(val context: Context): AuthRepository {
     }
 
     override suspend fun getProfile(): Profile? {
-        //TODO("Not yet implemented")
-        return null
+        return NetworkClient(context).apiService.getProfile()?.toDomain()
     }
 
     override fun updateProfile(profile: Profile) {

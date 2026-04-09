@@ -4,14 +4,12 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
 import com.olga.avshister.rainguard.data.profile.AuthRemoteRepository
 import com.olga.avshister.rainguard.data.profile.AuthRepository
 import com.olga.avshister.rainguard.domain.profile.Profile
 import com.olga.avshister.rainguard.domain.profile.Role
 import com.olga.avshister.rainguard.presentation.core.MAP_SCREEN
 import com.olga.avshister.rainguard.presentation.core.SELECT_PRODUCT_TO_CHECK_SCREEN
-import com.olga.avshister.rainguard.presentation.viewmodel.owner.OwnerEvent
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
