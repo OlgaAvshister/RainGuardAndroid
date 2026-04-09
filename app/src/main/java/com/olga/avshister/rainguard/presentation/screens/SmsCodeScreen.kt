@@ -106,7 +106,7 @@ fun SmsCodeScreen(navController: NavController, phoneNumber: String) {
         viewModel.action.collect { action ->
             when (action) {
                 is SmsCodeViewModel.Action.NavigateToScreen-> {
-                    navController.navigate(MAP_SCREEN) {
+                    navController.navigate(action.screen) {
                         popUpTo(0) { inclusive = true }
                         launchSingleTop = true
                     }

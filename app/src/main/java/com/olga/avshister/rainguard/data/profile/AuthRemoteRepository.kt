@@ -1,13 +1,16 @@
 package com.olga.avshister.rainguard.data.profile
 
 import android.content.Context
-import com.olga.avshister.rainguard.data.network.NetworkClient.apiService
+import com.olga.avshister.rainguard.data.network.AuthInterceptor.Companion.TOKEN_HEADER
+import com.olga.avshister.rainguard.data.network.NetworkClient
+import com.olga.avshister.rainguard.data.network.TokenManager
 import com.olga.avshister.rainguard.data.network.auth.AuthRequest
+import com.olga.avshister.rainguard.data.network.auth.AuthResponse.Companion.toDomain
 import com.olga.avshister.rainguard.domain.cart.Cart
 import com.olga.avshister.rainguard.domain.payment.Card
 import com.olga.avshister.rainguard.domain.profile.Profile
 
-class AuthRemoteRepository(context: Context): AuthRepository {
+class AuthRemoteRepository(val context: Context): AuthRepository {
     override fun auth(phone: String) {
         TODO("Not yet implemented")
     }
@@ -16,11 +19,18 @@ class AuthRemoteRepository(context: Context): AuthRepository {
         phone: String,
         code: String
     ): Profile {
-        return apiService.auth(AuthRequest(phone, code))
+        val request = AuthRequest(phone, code)
+
+        // Выполняем синхронный запрос (для корутин)
+        val response = NetworkClient(context).apiService.auth(request)
+        val token = response.headers()[TOKEN_HEADER]
+        TokenManager(context).saveToken(token.orEmpty())
+
+        return response.body()!!.toDomain()
     }
 
     override suspend fun logout() {
-        TODO("Not yet implemented")
+        TokenManager(context).clearToken()
     }
 
     override suspend fun getProfile(): Profile? {

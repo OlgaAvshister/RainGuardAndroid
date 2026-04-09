@@ -96,6 +96,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp.logging.interceptor)
 
+    // для шифрования токенов и прочей чувствительной информации
+    implementation(libs.androidx.security.crypto)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
