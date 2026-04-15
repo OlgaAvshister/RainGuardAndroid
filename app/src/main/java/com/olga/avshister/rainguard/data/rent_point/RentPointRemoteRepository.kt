@@ -1,5 +1,8 @@
 package com.olga.avshister.rainguard.data.rent_point
 
+import android.content.Context
+import com.olga.avshister.rainguard.data.network.NetworkClient
+import com.olga.avshister.rainguard.data.network.rentPoint.RentPointNet.Companion.toDomain
 import com.olga.avshister.rainguard.domain.filter.Filter
 import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.domain.rent.Rent
@@ -8,16 +11,16 @@ import com.olga.avshister.rainguard.domain.rent.RentPoint
 /**
  * Репозиторий для получения данных о точках аренды с удаленного сервера
  */
-class RentPointRemoteRepository: RentPointRepository {
+class RentPointRemoteRepository(val context: Context): RentPointRepository {
     override suspend fun registerRentPoint(rentPoint: RentPoint) {
         TODO("Not yet implemented")
     }
 
-    override fun getRentPoints(): List<RentPoint> {
-        TODO("Not yet implemented")
+    override suspend fun getRentPoints(): List<RentPoint> {
+        return NetworkClient(context).apiService.getRentPoints().toDomain()
     }
 
-    override fun getRentPointById(id: Long): RentPoint? {
+    override suspend fun getRentPointById(id: Long): RentPoint? {
         TODO("Not yet implemented")
     }
 

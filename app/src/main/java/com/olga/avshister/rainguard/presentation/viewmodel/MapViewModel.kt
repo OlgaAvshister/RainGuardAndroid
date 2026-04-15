@@ -7,8 +7,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
+import com.olga.avshister.rainguard.data.profile.AuthRemoteRepository
 import com.olga.avshister.rainguard.data.profile.AuthRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository
+import com.olga.avshister.rainguard.data.rent_point.RentPointRemoteRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointRepository
 import com.olga.avshister.rainguard.domain.profile.Role
 import com.olga.avshister.rainguard.domain.rent.RentPoint
@@ -22,12 +24,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class MapViewModel(application: Application): AndroidViewModel(application) {
-    /**
-     * Пока используем локальную реализацию репозитория, после разработки сервера нужно будет
-     * переключить на RentPointRemoteRepository
-     */
-    val rentPointRepository: RentPointRepository = RentPointLocalRepository
-    val authRepository: AuthRepository = AuthLocalRepository(application)
+
+    //val rentPointRepository: RentPointRepository = RentPointLocalRepository
+    //val authRepository: AuthRepository = AuthLocalRepository(application)
+    val authRepository: AuthRepository = AuthRemoteRepository(application)
+    val rentPointRepository: RentPointRepository = RentPointRemoteRepository(application)
 
     private val _state = MutableStateFlow(
         MapMainContentState(
@@ -62,7 +63,7 @@ class MapViewModel(application: Application): AndroidViewModel(application) {
         }
     }
 
-    private fun getRentPoints(): List<RentPoint> {
+    private suspend fun getRentPoints(): List<RentPoint> {
         return rentPointRepository.getRentPoints()
     }
 }

@@ -49,11 +49,11 @@ object RentPointLocalRepository: RentPointRepository {
     }
 
 
-    override fun getRentPoints(): List<RentPoint> {
+    override suspend fun getRentPoints(): List<RentPoint> {
         return allRentPoints
     }
 
-    override fun getRentPointById(id: Long): RentPoint? {
+    override suspend fun getRentPointById(id: Long): RentPoint? {
         return runCatching { getRentPoints().first { it.id == id } }.getOrNull()
     }
 

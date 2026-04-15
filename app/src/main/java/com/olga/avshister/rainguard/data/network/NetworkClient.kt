@@ -19,17 +19,21 @@ class NetworkClient(context: Context) {
         OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
             .addInterceptor(loggingInterceptor)
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
+            .cache(null)
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
             .build()
     }
 
-    // это IP, который указывал ы на сам эмулятор, если бы на нем развернули сервер
+    // это IP, который указывал бы на сам эмулятор, если бы на нем развернули сервер
     // можно использовать для работы из Postman
-    //private val BASE_URL = "http://0.0.0.0:8080/"
+    //private val baseUrl = "http://0.0.0.0:8080/"
+
+    // такой сейчас IP на моей локальной машине
+    private val baseUrl = "http://192.168.1.46:8080/"
 
     // а этот IP - для обращения эмулятора на сервер, развернутый локально на компьютере
-    private val baseUrl = "http://10.0.2.2:8080/"
+    //private val baseUrl = "http://10.0.2.2:8080/"
 
     val apiService: ApiService by lazy {
         Retrofit.Builder()

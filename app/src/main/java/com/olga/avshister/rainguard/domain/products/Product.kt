@@ -5,9 +5,8 @@ import kotlin.math.absoluteValue
 data class Product(
     val id: Long, // инвентарный номер
     val productType: ProductType, // зонт/дождевик
-    //val image: String,
     val article: Long = -1, // поле, которое однозначно закрепляет за собой набор характеристик (несколько товаров с одинаковыми атрибутами должны иметь одинаковый артикул)
-    val image: Int,
+    val image: Int = -1,
     val printType: PrintType, // есть принт/нет принта
     val color: Colors,
     val formFactor: FormFactor, // FOLDING (складывающийся)/STICK (трость) для зонта; JACKET (куртка)/ FULLBODY_RAINCOAT для дождевика на всё тело

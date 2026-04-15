@@ -128,22 +128,26 @@ fun RainGuardApp() {
 
 suspend fun getStartDestination(context: Context) = withContext(Dispatchers.IO) {
     //AuthLocalRepository(context).getProfile()?.let {
-    AuthRemoteRepository(context).getProfile()?.let {
-        when (it.role) {
-            Role.CUSTOMER -> {
-                MAP_SCREEN
+    try {
+        AuthRemoteRepository(context).getProfile()?.let {
+            when (it.role) {
+                Role.CUSTOMER -> {
+                    MAP_SCREEN
+                }
+                Role.STUFF -> {
+                    SELECT_PRODUCT_TO_CHECK_SCREEN
+                }
+                Role.OWNER -> {
+                    MAP_SCREEN
+                }
+                else -> {
+                    AUTH_PHONE_SCREEN
+                }
             }
-            Role.STUFF -> {
-                SELECT_PRODUCT_TO_CHECK_SCREEN
-            }
-            Role.OWNER -> {
-                MAP_SCREEN
-            }
-            else -> {
-                AUTH_PHONE_SCREEN
-            }
+        } ?: run {
+            AUTH_PHONE_SCREEN
         }
-    } ?: run {
+    } catch (e: Exception) {
         AUTH_PHONE_SCREEN
     }
 }

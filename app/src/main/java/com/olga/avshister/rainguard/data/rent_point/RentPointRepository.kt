@@ -7,8 +7,8 @@ import com.olga.avshister.rainguard.domain.rent.RentPoint
 
 interface RentPointRepository {
     suspend fun registerRentPoint(rentPoint: RentPoint)
-    fun getRentPoints(): List<RentPoint>
-    fun getRentPointById(id: Long): RentPoint?
+    suspend fun getRentPoints(): List<RentPoint>
+    suspend fun getRentPointById(id: Long): RentPoint?
 
     fun searchProducts(filter: Filter?, rentPointId: Long): List<Product>
     fun searchProducts(articul: Long, rentPointId: Long): List<Product>
