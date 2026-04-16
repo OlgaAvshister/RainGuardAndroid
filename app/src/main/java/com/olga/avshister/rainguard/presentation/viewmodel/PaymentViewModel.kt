@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.olga.avshister.rainguard.data.cart.CheckoutLocalRepository
 import com.olga.avshister.rainguard.data.cart.CheckoutRepository
 import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
+import com.olga.avshister.rainguard.data.profile.AuthRemoteRepository
 import com.olga.avshister.rainguard.data.profile.AuthRepository
 import com.olga.avshister.rainguard.domain.cart.Cart
 import com.olga.avshister.rainguard.domain.payment.Card
@@ -19,7 +20,8 @@ import kotlinx.coroutines.withContext
 
 
 class PaymentViewModel(application: Application): AndroidViewModel(application) {
-    private val authRepository: AuthRepository = AuthLocalRepository(application)
+    //private val authRepository: AuthRepository = AuthLocalRepository(application)
+    private val authRepository: AuthRepository = AuthRemoteRepository(application)
     private val checkoutRepository: CheckoutRepository = CheckoutLocalRepository(application)
 
     sealed class PaymentUiState {
@@ -85,7 +87,7 @@ class PaymentViewModel(application: Application): AndroidViewModel(application) 
                 selectedCard?.let { card ->
                     authRepository.updateProfile(
                         profile.copy(
-                            cart = Cart(emptyList()), // обнуляем корзину (подготовка для следующего заказа)
+                            cart = Cart(arrayListOf()), // обнуляем корзину (подготовка для следующего заказа)
                             activeRent = Rent(
                                 customerId = profile.id,
                                 startedAt = System.currentTimeMillis(),

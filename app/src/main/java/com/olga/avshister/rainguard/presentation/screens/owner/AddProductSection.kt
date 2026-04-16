@@ -101,7 +101,6 @@ fun AddProductSection(
                                 Product(
                                     id = id,
                                     productType = selectedType!!,
-                                    image = Utils.getImageResource(selectedType!!, selectedColor!!),
                                     formFactor = selectedFormFactor!!,
                                     color = selectedColor!!,
                                     printType = selectedPrintType!!,

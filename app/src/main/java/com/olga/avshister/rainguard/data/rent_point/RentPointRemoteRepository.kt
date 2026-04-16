@@ -3,6 +3,7 @@ package com.olga.avshister.rainguard.data.rent_point
 import android.content.Context
 import com.olga.avshister.rainguard.data.network.NetworkClient
 import com.olga.avshister.rainguard.data.network.rentPoint.RentPointNet.Companion.toDomain
+import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository.matchesFilter
 import com.olga.avshister.rainguard.domain.filter.Filter
 import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.domain.rent.Rent
@@ -24,19 +25,43 @@ class RentPointRemoteRepository(val context: Context): RentPointRepository {
         TODO("Not yet implemented")
     }
 
-    override fun searchProducts(filter: Filter?, rentPointId: Long): List<Product> {
-        TODO("Not yet implemented")
+    override suspend fun searchProducts(filter: Filter?, rentPointId: Long): List<Product> {
+        return NetworkClient(context)
+            .apiService
+            .getRentPoints()
+            .toDomain()
+            .find { it.id == rentPointId }
+            ?.availableProducts
+            ?.filter {
+                matchesFilter(product= it, filter = filter)
+            } ?: emptyList()
     }
 
-    override fun searchProducts(
-        articul: Long,
+    override suspend fun searchProducts(
+        article: Long,
         rentPointId: Long
     ): List<Product> {
-        TODO("Not yet implemented")
+        return NetworkClient(context)
+            .apiService
+            .getRentPoints()
+            .toDomain()
+            .find { it.id == rentPointId }
+            ?.availableProducts
+            ?.filter {
+                it.article == article
+            } ?: emptyList()
     }
 
-    override fun searchProducts(ids: List<Long>, rentPointId: Long): List<Product> {
-        TODO("Not yet implemented")
+    override suspend fun searchProducts(ids: List<Long>, rentPointId: Long): List<Product> {
+        return NetworkClient(context)
+            .apiService
+            .getRentPoints()
+            .toDomain()
+            .find { it.id == rentPointId }
+            ?.availableProducts
+            ?.filter {
+                ids.contains(it.id)
+            } ?: emptyList()
     }
 
     override fun deleteRentPoint(rentPointId: Long) {

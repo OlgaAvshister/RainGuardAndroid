@@ -4,9 +4,12 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.olga.avshister.rainguard.data.cart.CartLocalRepository
+import com.olga.avshister.rainguard.data.cart.CartRepository
 import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
 import com.olga.avshister.rainguard.data.profile.AuthRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository
+import com.olga.avshister.rainguard.data.rent_point.RentPointRemoteRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointRepository
 import com.olga.avshister.rainguard.domain.products.Product
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,8 +22,10 @@ class CartViewModel(
     private val rentPointId: Long,
     private val selectedArticles: Set<Long>
 ) : ViewModel() {
-    private val rentPointRepository: RentPointRepository = RentPointLocalRepository
+    //private val rentPointRepository: RentPointRepository = RentPointLocalRepository
+    private val rentPointRepository: RentPointRepository = RentPointRemoteRepository(context)
     private val authRepository: AuthRepository = AuthLocalRepository(context)
+    private val cartLocalRepository: CartRepository = CartLocalRepository
 
     data class State(
         val cart: CartUI,
@@ -60,7 +65,8 @@ class CartViewModel(
                 _state.update { it.copy(isLoading = true) }
 
                 // Очищаем корзину
-                authRepository.clearCart()
+                cartLocalRepository.clearCart()
+                //authRepository.clearCart()
 
                 // Создаем начальное состояние корзины
                 val initialCart = getInitialCartState(rentPointId, selectedArticles)
@@ -96,7 +102,8 @@ class CartViewModel(
                 _state.update { it.copy(isLoading = true) }
 
                 // Добавляем в репозиторий
-                authRepository.addToCart(article)
+                //authRepository.addToCart(article)
+                cartLocalRepository.addToCart(article)
 
                 // Обновляем состояние UI
                 _state.update { currentState ->
@@ -141,7 +148,8 @@ class CartViewModel(
                     ?.currentQuantity ?: 0
 
                 if (currentQuantity > 0) {
-                    authRepository.removeFromCart(article)
+                    //authRepository.removeFromCart(article)
+                    cartLocalRepository.removeFromCart(article)
                 }
 
                 _state.update { currentState ->
@@ -172,7 +180,7 @@ class CartViewModel(
         }
     }
 
-    private fun getInitialCartState(rentPointId: Long, articles: Set<Long>): CartUI {
+    private suspend fun getInitialCartState(rentPointId: Long, articles: Set<Long>): CartUI {
         return try {
             val items = articles.mapNotNull { article ->
                 val productsByArticle = rentPointRepository.searchProducts(article, rentPointId)

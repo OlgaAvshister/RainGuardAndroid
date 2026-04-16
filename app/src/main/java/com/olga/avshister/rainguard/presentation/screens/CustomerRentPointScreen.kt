@@ -229,7 +229,7 @@ private fun ActiveRentBSheetContent(
         BottomSection(
             buttonText = stringResource(R.string.return_here_active_rent_bsheet),
             onClicked = {
-                onNextState(BSheetContentState.SelectIdsStateToDropState)
+                onNextState(BSheetContentState.SelectIdsStateToDropState(rentPoint.id))
             }
         )
     }

@@ -1,3 +1,5 @@
+package com.olga.avshister.rainguard.presentation.screens
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,7 +30,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -51,7 +52,6 @@ import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.presentation.state.BSheetContentState
 import com.olga.avshister.rainguard.presentation.ui.components.PrimaryButton
 import com.olga.avshister.rainguard.presentation.viewmodel.CartViewModel
-import com.olga.avshister.rainguard.presentation.viewmodel.CustomerRentPointViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -178,7 +178,7 @@ fun CartScreen(
             text = stringResource(R.string.next),
             modifier = Modifier.align(Alignment.CenterHorizontally),
             onClick = {
-                onNextState(BSheetContentState.SelectIdsStateToTakeState)
+                onNextState(BSheetContentState.SelectIdsStateToTakeState(rentPointId))
                 /*navController.navigate(SELECT_IDS_SCREEN)*/
             }
         )
@@ -237,7 +237,7 @@ fun CartProductItem(
                 modifier = Modifier
                     .width(120.dp) // Фиксированная ширина
                     .height(140.dp), // Фиксированная высота
-                painter = painterResource(id = cartItem.product.image),
+                painter = painterResource(id = cartItem.product.getImageResource()),
                 contentDescription = null,
                 contentScale = ContentScale.Fit
             )
@@ -321,7 +321,7 @@ fun CartProductItem(
             if (cartItem.currentQuantity >= cartItem.maxQuantity) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Достигнут лимит доступных товаров",
+                    text = stringResource(R.string.cart_max_quantity_reached),
                     fontSize = 12.sp,
                     color = Color.Red
                 )

@@ -30,7 +30,7 @@ class NetworkClient(context: Context) {
     //private val baseUrl = "http://0.0.0.0:8080/"
 
     // такой сейчас IP на моей локальной машине
-    private val baseUrl = "http://192.168.1.46:8080/"
+    private val baseUrl = "http://192.168.1.91:8080/"
 
     // а этот IP - для обращения эмулятора на сервер, развернутый локально на компьютере
     //private val baseUrl = "http://10.0.2.2:8080/"

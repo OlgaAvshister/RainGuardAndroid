@@ -46,6 +46,7 @@
     <!-- Каталог -->
     <string name="catalog_select_umbrellas">Выберите зонты</string>
     <string name="catalog_select_raincoats">Выберите дождевики</string>
+    <string name="catalog_select_products">Выберите вещи</string>
 
     <!-- Заполнение инвентарных номеров -->
     <string name="fill_ids">Введите номера товаров</string>
@@ -56,6 +57,7 @@
     <string name="cart_toolbar">Ваш выбор</string>
     <string name="cart_need_raincoat">Нужен дождевик</string>
     <string name="cart_need_umbrella">Нужен зонт</string>
+    <string name="cart_max_quantity_reached">Достигнут лимит доступных товаров</string>
 
     <!-- Чекаут -->
     <string name="checkout_your_choice">Ваш выбор</string>

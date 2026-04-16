@@ -21,7 +21,7 @@ data class Profile(
                 phone = phone,
                 role = role,
                 cards = emptyList(),
-                cart = Cart(products = listOf()),
+                cart = Cart(products = arrayListOf()),
                 activeRent = null,
             )
     }

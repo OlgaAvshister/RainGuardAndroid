@@ -30,6 +30,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,6 +73,20 @@ fun CatalogScreen(
         mutableStateOf<Set<Long>>(emptySet())
     }
 
+    var productGroups by remember {
+        mutableStateOf<List<Product>>(emptyList())
+    }
+
+    var products by remember {
+        mutableStateOf<List<Product>>(emptyList())
+    }
+
+    LaunchedEffect(Unit) {
+        products = rentPointRepository.searchProducts(filter, rentPointId).apply {
+            productGroups = this.toSetByArticul()
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -83,10 +98,16 @@ fun CatalogScreen(
         TopAppBar(
             title = {
                 Text(
-                    text = if (filter?.productType == Product.ProductType.UMBRELLA) {
-                        stringResource(R.string.catalog_select_umbrellas)
-                    } else {
-                        stringResource(R.string.catalog_select_raincoats)
+                    text = when (filter.productType) {
+                        Product.ProductType.UMBRELLA -> {
+                            stringResource(R.string.catalog_select_umbrellas)
+                        }
+                        Product.ProductType.RAINCOAT -> {
+                            stringResource(R.string.catalog_select_raincoats)
+                        }
+                        else -> {
+                            stringResource(R.string.catalog_select_products)
+                        }
                     },
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold
@@ -103,9 +124,6 @@ fun CatalogScreen(
         )
 
         Spacer(modifier = Modifier.height(12.dp))
-
-        val products = rentPointRepository.searchProducts(filter, rentPointId)
-        val productGroups = products.toSetByArticul()
 
         Column(
             modifier = Modifier
@@ -197,9 +215,7 @@ fun ProductItem(
 fun getGroupUiModel(group: Product, count: Int): GroupUiModel {
     val text =
         "Артикул: ${group.article}\nЦвет: ${group.color.value}\nРазмер: ${group.size ?: "отсутствует"}\nТип: ${group.formFactor.value}\nПринт: ${group.printType.value}\nКоличество: $count"
-    with(group) {
-        return GroupUiModel(image, text)
-    }
+    return GroupUiModel(resIdImg = group.getImageResource(), text)
 }
 
 data class GroupUiModel(

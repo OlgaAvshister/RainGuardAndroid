@@ -88,7 +88,7 @@ private fun RentItemCard(item: Product) {
                 modifier = Modifier
                     .size(120.dp)
                     .clip(RoundedCornerShape(8.dp)),
-                painter = painterResource(id = item.image),
+                painter = painterResource(id = item.getImageResource()),
                 contentDescription = item.formFactor.value
             )
 

@@ -57,7 +57,7 @@ object RentPointLocalRepository: RentPointRepository {
         return runCatching { getRentPoints().first { it.id == id } }.getOrNull()
     }
 
-    override fun searchProducts(filter: Filter?, rentPointId: Long): List<Product> {
+    override suspend fun searchProducts(filter: Filter?, rentPointId: Long): List<Product> {
         return allRentPoints
             .find { it.id == rentPointId }
             ?.availableProducts
@@ -66,14 +66,14 @@ object RentPointLocalRepository: RentPointRepository {
             } ?: emptyList()
     }
 
-    override fun searchProducts(articul: Long, rentPointId: Long): List<Product> {
+    override suspend fun searchProducts(article: Long, rentPointId: Long): List<Product> {
         return allRentPoints
             .find { it.id == rentPointId }
             ?.availableProducts
-            ?.filter { it.article == articul } ?: emptyList()
+            ?.filter { it.article == article } ?: emptyList()
     }
 
-    override fun searchProducts(ids: List<Long>, rentPointId: Long): List<Product> {
+    override suspend fun searchProducts(ids: List<Long>, rentPointId: Long): List<Product> {
         return allRentPoints
             .find { it.id == rentPointId }
             ?.availableProducts
@@ -124,7 +124,7 @@ object RentPointLocalRepository: RentPointRepository {
      * Если какой-то параметр в фильтре не указан - то считаем, что товар соответсвует фильтру
      * и нужно проверить остальные параметры
      */
-    private fun matchesFilter(product: Product, filter: Filter?): Boolean {
+    fun matchesFilter(product: Product, filter: Filter?): Boolean {
         // если фильтр не задан, то товар автоматически соответствует фильтру
         if (filter == null)
             return true

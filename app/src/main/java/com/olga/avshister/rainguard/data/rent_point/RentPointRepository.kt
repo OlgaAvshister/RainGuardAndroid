@@ -10,10 +10,10 @@ interface RentPointRepository {
     suspend fun getRentPoints(): List<RentPoint>
     suspend fun getRentPointById(id: Long): RentPoint?
 
-    fun searchProducts(filter: Filter?, rentPointId: Long): List<Product>
-    fun searchProducts(articul: Long, rentPointId: Long): List<Product>
+    suspend fun searchProducts(filter: Filter?, rentPointId: Long): List<Product>
+    suspend fun searchProducts(article: Long, rentPointId: Long): List<Product>
 
-    fun searchProducts(ids: List<Long>, rentPointId: Long): List<Product>
+    suspend fun searchProducts(ids: List<Long>, rentPointId: Long): List<Product>
 
     fun deleteRentPoint(rentPointId: Long)
 

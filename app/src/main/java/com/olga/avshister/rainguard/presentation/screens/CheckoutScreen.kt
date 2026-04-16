@@ -291,7 +291,7 @@ fun ProductItem(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(id = product.image),
+                    painter = painterResource(id = product.getImageResource()),
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()

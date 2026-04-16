@@ -1,12 +1,12 @@
 package com.olga.avshister.rainguard.domain.products
 
+import com.olga.avshister.rainguard.R
 import kotlin.math.absoluteValue
 
 data class Product(
     val id: Long, // инвентарный номер
     val productType: ProductType, // зонт/дождевик
     val article: Long = -1, // поле, которое однозначно закрепляет за собой набор характеристик (несколько товаров с одинаковыми атрибутами должны иметь одинаковый артикул)
-    val image: Int = -1,
     val printType: PrintType, // есть принт/нет принта
     val color: Colors,
     val formFactor: FormFactor, // FOLDING (складывающийся)/STICK (трость) для зонта; JACKET (куртка)/ FULLBODY_RAINCOAT для дождевика на всё тело
@@ -46,6 +46,56 @@ data class Product(
         DIRTY(valueStuff = "Нужна стирка", valueOwner = "Грязные"),
         BROKEN(valueStuff = "Нужно заменить", valueOwner = "Неисправные"),
         BOUGHT(valueStuff = "Выкуплен", valueOwner = "Выкуплен"),
+    }
+
+
+    fun getImageResource(): Int {
+        var resId: Int = -1
+
+        when (productType) {
+            ProductType.UMBRELLA -> {
+                resId = when (color) {
+                    Colors.RED -> {
+                        R.drawable.ic_umbrella_red
+                    }
+
+                    Colors.YELLOW -> {
+                        R.drawable.ic_umbrella_yellow
+                    }
+
+                    Colors.WHITE -> {
+                        R.drawable.ic_umbrella_white
+                    }
+
+                    Colors.GREEN -> {
+                        R.drawable.ic_umbrella_green
+                    }
+
+                    Colors.BLACK -> {
+                        R.drawable.ic_umbrella_black
+                    }
+
+                    Colors.PURPLE -> {
+                        R.drawable.ic_umbrella_purple
+                    }
+                }
+            }
+
+            ProductType.RAINCOAT -> {
+                resId = when (color) {
+                    Colors.RED -> {
+                        R.drawable.ic_raincoat_red
+                    }
+                    Colors.YELLOW -> {
+                        R.drawable.ic_raincoat_yellow
+                    }
+                    else -> {
+                        throw IllegalArgumentException("Недопустимый цвет для дождевика")
+                    }
+                }
+            }
+        }
+        return resId
     }
 
     companion object {

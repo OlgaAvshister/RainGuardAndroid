@@ -12,7 +12,6 @@ import com.olga.avshister.rainguard.domain.products.Product.Companion.withGenera
 import com.olga.avshister.rainguard.domain.rent.Rate
 import com.olga.avshister.rainguard.domain.rent.Rent
 import com.olga.avshister.rainguard.domain.rent.RentPoint
-import com.olga.avshister.rainguard.presentation.ui.utils.Utils.getImageResource
 import kotlin.math.ceil
 import kotlin.random.Random
 
@@ -60,7 +59,6 @@ object Dataset {
             return Product(
                 id = generateProductId(),
                 productType = Product.ProductType.UMBRELLA,
-                image = getImageResource(productType = Product.ProductType.UMBRELLA, colors = generatedColor),
                 printType = Product.PrintType.values().random(),
                 color = generatedColor,
                 formFactor = listOf(
@@ -77,7 +75,6 @@ object Dataset {
             return Product(
                 id = generateProductId(),
                 productType = Product.ProductType.RAINCOAT,
-                image = getImageResource(productType = Product.ProductType.RAINCOAT, colors = generatedColor),
                 printType = Product.PrintType.values().random(),
                 color = generatedColor,
                 formFactor = listOf(

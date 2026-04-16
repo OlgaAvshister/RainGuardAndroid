@@ -99,7 +99,7 @@ class AuthLocalRepository(context: Context): AuthRepository {
                 products.add(article)
                     updateProfile(
                         profile.copy(
-                            cart = Cart(products.toList())
+                            cart = Cart(ArrayList(products))
                         )
                     )
             } ?: NullPointerException("AuthLocalRepository/addToCart: Список для обновления корзины null")
@@ -114,7 +114,7 @@ class AuthLocalRepository(context: Context): AuthRepository {
                 products.remove(article)
                 updateProfile(
                     profile.copy(
-                        cart = Cart(products.toList())
+                        cart = Cart(ArrayList(products))
                     )
                 )
             }
@@ -126,7 +126,7 @@ class AuthLocalRepository(context: Context): AuthRepository {
         getProfile()?.let { profile ->
             updateProfile(
                 profile.copy(
-                    cart = Cart(emptyList())
+                    cart = Cart(arrayListOf())
                 )
             )
         }
@@ -178,7 +178,7 @@ class AuthLocalRepository(context: Context): AuthRepository {
             name = name,
             phone = phone,
             role = role ?: getMockProfileRole(phone),
-            cart = Cart(products = emptyList()),
+            cart = Cart(products = arrayListOf()),
             cards = emptyList(),
             activeRent = null,
         )

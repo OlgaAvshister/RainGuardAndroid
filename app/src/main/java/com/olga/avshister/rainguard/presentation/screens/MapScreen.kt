@@ -1,6 +1,5 @@
 package com.olga.avshister.rainguard.presentation.screens
 
-import CartScreen
 import android.Manifest
 import android.content.pm.PackageManager
 import android.util.Log
@@ -213,6 +212,7 @@ fun MapScreen(navController: NavHostController) {
                     is BSheetContentState.SelectIdsStateToTakeState -> {
                         SelectIdsScreen(
                             openToTake = true,
+                            rentPointId = (currentBSheetContentState as BSheetContentState.SelectIdsStateToTakeState).rentPointId,
                             onNextState = { state ->
                                 navigateTo(state)
                             }
@@ -238,6 +238,7 @@ fun MapScreen(navController: NavHostController) {
                     is BSheetContentState.SelectIdsStateToDropState -> {
                         SelectIdsScreen(
                             openToTake = false,
+                            rentPointId = (currentBSheetContentState as BSheetContentState.SelectIdsStateToDropState).rentPointId,
                             onNextState = { state ->
                                 navigateTo(state)
                             }
@@ -479,7 +480,7 @@ fun MainContent(
                             setIcon(imageProvider)
                         }
                     }
-                    collection.clusterPlacemarks(60.0, 15)
+                    collection.clusterPlacemarks(60.0, 5)
 
                 } else {
                     Log.d("MAP_SCREEN", "No rent points to display")
