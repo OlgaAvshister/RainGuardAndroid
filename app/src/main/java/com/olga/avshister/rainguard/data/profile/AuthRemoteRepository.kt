@@ -5,9 +5,8 @@ import com.olga.avshister.rainguard.data.network.AuthInterceptor.Companion.TOKEN
 import com.olga.avshister.rainguard.data.network.NetworkClient
 import com.olga.avshister.rainguard.data.network.TokenManager
 import com.olga.avshister.rainguard.data.network.auth.AuthRequest
-import com.olga.avshister.rainguard.data.network.profile.Profile.Companion.toDomain
+import com.olga.avshister.rainguard.data.network.profile.ProfileNet.Companion.toDomain
 import com.olga.avshister.rainguard.domain.cart.Cart
-import com.olga.avshister.rainguard.domain.payment.Card
 import com.olga.avshister.rainguard.domain.profile.Profile
 
 class AuthRemoteRepository(val context: Context): AuthRepository {
@@ -38,14 +37,6 @@ class AuthRemoteRepository(val context: Context): AuthRepository {
     }
 
     override fun updateProfile(profile: Profile) {
-        TODO("Not yet implemented")
-    }
-
-    override fun updateCart(cart: Cart) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun addCard(card: Card) {
         TODO("Not yet implemented")
     }
 

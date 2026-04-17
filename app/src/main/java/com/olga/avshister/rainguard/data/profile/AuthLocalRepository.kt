@@ -67,18 +67,6 @@ class AuthLocalRepository(context: Context): AuthRepository {
         prefs.setString(KEY_ALL_PROFILES, json)
     }
 
-    override fun updateCart(cart: Cart) {
-
-    }
-
-    override suspend fun addCard(card: Card) {
-        getProfile()?.let { profile ->
-            profile.copy(cards = profile.cards.plus(card)).apply {
-                updateProfile(this)
-            }
-        }
-    }
-
     override fun finishRent(timeNow: Long) {
         // todo:
         /**

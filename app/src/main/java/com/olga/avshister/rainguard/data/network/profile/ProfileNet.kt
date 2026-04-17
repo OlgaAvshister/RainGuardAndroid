@@ -2,12 +2,12 @@ package com.olga.avshister.rainguard.data.network.profile
 
 import com.olga.avshister.rainguard.domain.cart.Cart
 import com.olga.avshister.rainguard.domain.profile.Profile
-import com.olga.avshister.rainguard.data.network.profile.Profile as NetworkProfile
+import com.olga.avshister.rainguard.data.network.profile.ProfileNet as NetworkProfile
 import com.olga.avshister.rainguard.domain.profile.Role
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Profile(
+data class ProfileNet(
     val id: Long,
     val phone: String,
     val name: String,

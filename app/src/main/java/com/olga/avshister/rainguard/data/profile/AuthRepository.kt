@@ -14,9 +14,6 @@ interface AuthRepository: CartRepository {
     suspend fun getProfile(): Profile?
     fun updateProfile(profile: Profile)
 
-    fun updateCart(cart: Cart)
-    suspend fun addCard(card: Card)
-
     fun finishRent(timeNow: Long)
 
     fun addStuff(name: String, phone: String)

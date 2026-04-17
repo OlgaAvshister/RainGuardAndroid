@@ -8,7 +8,8 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.olga.avshister.rainguard.data.cart.CheckoutLocalRepository
 import com.olga.avshister.rainguard.data.cart.CheckoutRepository
-import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
+import com.olga.avshister.rainguard.data.payment.CardRemoteRepository
+import com.olga.avshister.rainguard.data.payment.CardRepository
 import com.olga.avshister.rainguard.data.profile.AuthRemoteRepository
 import com.olga.avshister.rainguard.data.profile.AuthRepository
 import com.olga.avshister.rainguard.domain.cart.Cart
@@ -22,6 +23,7 @@ import kotlinx.coroutines.withContext
 class PaymentViewModel(application: Application): AndroidViewModel(application) {
     //private val authRepository: AuthRepository = AuthLocalRepository(application)
     private val authRepository: AuthRepository = AuthRemoteRepository(application)
+    private val cardRepository: CardRepository = CardRemoteRepository(application)
     private val checkoutRepository: CheckoutRepository = CheckoutLocalRepository(application)
 
     sealed class PaymentUiState {
@@ -47,8 +49,7 @@ class PaymentViewModel(application: Application): AndroidViewModel(application) 
 
 
     private suspend fun loadCards() = withContext(Dispatchers.IO) {
-      val profile = authRepository.getProfile()!!
-      cards = profile.cards
+      cards = cardRepository.getCards()
       selectedCard = cards.firstOrNull()
     }
 
@@ -69,7 +70,7 @@ class PaymentViewModel(application: Application): AndroidViewModel(application) 
                     cvv = cvv.toInt()
                 )
 
-                authRepository.addCard(newCard)
+                cardRepository.addCard(newCard)
                 loadCards()
             }
             withContext(Dispatchers.Main) {
