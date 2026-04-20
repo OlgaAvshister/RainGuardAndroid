@@ -9,7 +9,6 @@ import androidx.compose.ui.unit.dp
 import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.domain.products.Product.Companion.withGeneratedArticul
 import com.olga.avshister.rainguard.presentation.ui.components.CustomDropdownMenu
-import com.olga.avshister.rainguard.presentation.ui.utils.Utils
 
 @Composable
 fun AddProductSection(

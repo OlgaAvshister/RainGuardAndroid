@@ -1,8 +1,6 @@
 package com.olga.avshister.rainguard.data.profile
 
 import com.olga.avshister.rainguard.data.cart.CartRepository
-import com.olga.avshister.rainguard.domain.cart.Cart
-import com.olga.avshister.rainguard.domain.payment.Card
 import com.olga.avshister.rainguard.domain.profile.Profile
 
 interface AuthRepository: CartRepository {

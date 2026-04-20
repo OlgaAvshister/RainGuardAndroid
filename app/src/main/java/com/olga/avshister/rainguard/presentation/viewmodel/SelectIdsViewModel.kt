@@ -10,7 +10,6 @@ import com.olga.avshister.rainguard.data.cart.CheckoutLocalRepository
 import com.olga.avshister.rainguard.data.cart.CheckoutRepository
 import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
 import com.olga.avshister.rainguard.data.profile.AuthRepository
-import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointRemoteRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointRepository
 import com.olga.avshister.rainguard.domain.Checkout
@@ -91,7 +90,7 @@ class SelectIdsViewModel(context: Context, val openToTake: Boolean, val rentPoin
                     false -> {
                         // инвентарные номера товаров из активной аренды
                         // todo: сюда еще нужно будет вернуться при переводе завершения аренды на remote
-                        authRepository.getProfile()?.activeRent?.products?.map { it.id } ?: emptyList()
+                        authRepository.getProfile()?.activeRent?.productIds ?: emptyList()
                     }
                 }
                 _state.update { it.copy(

@@ -21,13 +21,12 @@ fun FinancialDialog(
     financialData: List<Rent>,
     onDismiss: () -> Unit
 ) {
-    val context = LocalContext.current
     val dateFormat = SimpleDateFormat("dd.MM", Locale.getDefault())
 
     val groupedByDate = financialData
-        .filter { it.completedAt != null }
+        .filter { it.finishedAt != null }
         .groupBy {
-            val date = Date(it.completedAt!!)
+            val date = Date(it.finishedAt!!)
             dateFormat.format(date)
         }
         .toSortedMap()
@@ -35,7 +34,7 @@ fun FinancialDialog(
     val dates = groupedByDate.keys.toList()
 
     // todo: высчитать на основе startedAt и completedAt, сейчас просто перемножаем тариф на количество товаров
-    val revenue = groupedByDate.values.map { it.sumOf { rent -> rent.rate.priceValue * rent.products.size }.toLong() }
+    val revenue = groupedByDate.values.map { it.sumOf { rent -> rent.rate.priceValue * rent.productIds.size }.toLong() }
     val salesCount = groupedByDate.values.map { it.size }
 
     AlertDialog(

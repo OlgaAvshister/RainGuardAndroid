@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,8 +43,10 @@ fun CurrentRentBSheet(
         confirmValueChange = { true }
     )
 
-    val viewModel: CurrentRentViewModel = viewModel()
-
+    val viewModelKey = remember {
+        "CurrentRentBSheet_${System.currentTimeMillis()}"
+    }
+    val viewModel: CurrentRentViewModel = viewModel(key = viewModelKey)
     val state by viewModel.state.collectAsState()
 
     // Обработка событий

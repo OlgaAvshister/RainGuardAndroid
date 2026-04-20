@@ -8,7 +8,6 @@ import com.olga.avshister.rainguard.data.cart.CartLocalRepository
 import com.olga.avshister.rainguard.data.cart.CartRepository
 import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
 import com.olga.avshister.rainguard.data.profile.AuthRepository
-import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointRemoteRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointRepository
 import com.olga.avshister.rainguard.domain.products.Product

@@ -1,8 +1,6 @@
 package com.olga.avshister.rainguard.presentation.ui.utils
 
 import android.util.Log
-import com.olga.avshister.rainguard.R
-import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.domain.rent.Rate
 import kotlin.math.ceil
 

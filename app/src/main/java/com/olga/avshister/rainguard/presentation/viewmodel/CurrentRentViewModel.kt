@@ -3,8 +3,10 @@ package com.olga.avshister.rainguard.presentation.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
-import com.olga.avshister.rainguard.data.profile.AuthRepository
+import com.olga.avshister.rainguard.data.rent.RentRepository
+import com.olga.avshister.rainguard.data.rent.RentRepositoryImpl
+import com.olga.avshister.rainguard.data.rent_point.RentPointRemoteRepository
+import com.olga.avshister.rainguard.data.rent_point.RentPointRepository
 import com.olga.avshister.rainguard.presentation.state.rent.RentState
 import com.olga.avshister.rainguard.presentation.ui.utils.Utils
 import kotlinx.coroutines.Job
@@ -18,8 +20,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class CurrentRentViewModel(application: Application) : AndroidViewModel(application) {
-
-    val authRepository: AuthRepository = AuthLocalRepository(application)
+    private val rentRepository: RentRepository = RentRepositoryImpl(application)
+    private val rentPointRepository: RentPointRepository = RentPointRemoteRepository(application)
 
     private val _state = MutableStateFlow(RentState(isLoading = true))
     val state: StateFlow<RentState> = _state.asStateFlow()
@@ -62,17 +64,25 @@ class CurrentRentViewModel(application: Application) : AndroidViewModel(applicat
         viewModelScope.launch {
             _state.value = _state.value.copy(isLoading = true)
 
-            // Имитация загрузки данных
-            delay(1000)
-            authRepository.getProfile()?.activeRent?.let { rent ->
-                startTime = rent.startedAt
-                _state.value = _state.value.copy(
-                    items = rent.products,
-                    rentTime = "00:00:00",
-                    rate = rent.rate,
-                    isLoading = false,
-                    cost = 0,
-                )
+            try {
+                val activeRent = rentRepository.getActiveRent()
+                activeRent?.let { rent ->
+                    startTime = activeRent.startedAt
+                    val rentedProducts = rentPointRepository.searchProducts(
+                        ids = activeRent.productIds,
+                        rentPointId = activeRent.startRentPointId!!
+                    )
+                    _state.value = _state.value.copy(
+                        items = rentedProducts,
+                        rentTime = "00:00:00",
+                        rate = rent.rate,
+                        isLoading = false,
+                        cost = 0,
+                    )
+                } ?: _events.emit(Event.Error(message = "Активная аренда не найдена"))
+
+            } catch (e: Exception) {
+                _events.emit(Event.Error(message = e.message.toString()))
             }
         }
     }

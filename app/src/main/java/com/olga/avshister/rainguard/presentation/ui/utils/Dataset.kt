@@ -139,18 +139,17 @@ object Dataset {
 
             rents.add(
                 Rent(
-                    customerId = customerId,
                     startedAt = startedAt,
-                    completedAt = completedAt,
-                    products = products,
-                    selectedPaymentCard = card,
+                    finishedAt = completedAt,
+                    productIds = products.map { it.id },
+                    cardNumber = card.number,
                     rate = rate
                 )
             )
         }
 
         // Сортируем по времени завершения (от новых к старым)
-        return rents.sortedByDescending { it.completedAt }
+        return rents.sortedByDescending { it.finishedAt }
     }
 
     /**
@@ -228,7 +227,7 @@ object Dataset {
 
     // Расширение для расчета стоимости аренды
     fun Rent.calculateTotalCost(): Int {
-        val durationMillis = completedAt!! - startedAt
+        val durationMillis = finishedAt!! - startedAt
         val durationMinutes = durationMillis / (60 * 1000.0)
 
         val billedUnits = when (rate) {
@@ -237,7 +236,7 @@ object Dataset {
             Rate.PER_DAY -> ceil(durationMinutes / (60.0 * 24)).toInt()
         }
 
-        return billedUnits * rate.priceValue * products.size
+        return billedUnits * rate.priceValue * productIds.size
     }
 
     // Альтернативная версия с более реалистичными данными
@@ -297,17 +296,16 @@ object Dataset {
 
             rents.add(
                 Rent(
-                    customerId = customerId,
                     startedAt = startedAt,
-                    completedAt = completedAt,
-                    products = products,
-                    selectedPaymentCard = card,
+                    finishedAt = completedAt,
+                    productIds = products.map { it.id },
+                    cardNumber = card.number,
                     rate = rate
                 )
             )
         }
 
-        return rents.sortedByDescending { it.completedAt }
+        return rents.sortedByDescending { it.finishedAt }
     }
 
     enum class RentScenario {

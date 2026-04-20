@@ -10,6 +10,7 @@ import com.olga.avshister.rainguard.domain.cart.Cart
 import com.olga.avshister.rainguard.domain.profile.Profile
 
 class AuthRemoteRepository(val context: Context): AuthRepository {
+    val apiService = NetworkClient(context).apiService
     override fun auth(phone: String) {
         TODO("Not yet implemented")
     }
@@ -21,7 +22,7 @@ class AuthRemoteRepository(val context: Context): AuthRepository {
         val request = AuthRequest(phone, code)
 
         // Выполняем синхронный запрос (для корутин)
-        val response = NetworkClient(context).apiService.auth(request)
+        val response = apiService.auth(request)
         val token = response.headers()[TOKEN_HEADER]
         TokenManager(context).saveToken(token.orEmpty())
 
@@ -33,7 +34,7 @@ class AuthRemoteRepository(val context: Context): AuthRepository {
     }
 
     override suspend fun getProfile(): Profile? {
-        return NetworkClient(context).apiService.getProfile()?.toDomain()
+        return apiService.getProfile()?.toDomain()
     }
 
     override fun updateProfile(profile: Profile) {
@@ -61,14 +62,6 @@ class AuthRemoteRepository(val context: Context): AuthRepository {
     }
 
     override suspend fun clearCart() {
-        TODO("Not yet implemented")
-    }
-
-    override fun getCurrentRentPointId(): Long {
-        TODO("Not yet implemented")
-    }
-
-    override fun setCurrentRentPointId(id: Long) {
         TODO("Not yet implemented")
     }
 }

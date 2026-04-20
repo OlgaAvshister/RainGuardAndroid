@@ -9,5 +9,5 @@ data class RentState(
     val cost: Int = 0,
     val rate: Rate = Rate.PER_MINUTE,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val startedAt: Long? = null
 )

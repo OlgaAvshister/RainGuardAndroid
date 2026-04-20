@@ -7,7 +7,6 @@ import com.google.gson.reflect.TypeToken
 import com.olga.avshister.rainguard.data.common.PrefsRepository
 import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl
 import com.olga.avshister.rainguard.domain.cart.Cart
-import com.olga.avshister.rainguard.domain.payment.Card
 import com.olga.avshister.rainguard.domain.profile.Profile
 import com.olga.avshister.rainguard.domain.profile.Role
 import kotlinx.coroutines.Dispatchers
@@ -120,14 +119,6 @@ class AuthLocalRepository(context: Context): AuthRepository {
         }
     }
 
-    override fun getCurrentRentPointId(): Long {
-        return prefs.getLong(KEY_CURRENT_RENT_POINT_ID)
-    }
-
-    override fun setCurrentRentPointId(id: Long) {
-        return prefs.setLong(KEY_CURRENT_RENT_POINT_ID, id)
-    }
-
     override fun addStuff(name: String, phone: String) {
         registerUser(name = name, phone = phone, role = Role.STUFF)
     }
@@ -197,6 +188,5 @@ class AuthLocalRepository(context: Context): AuthRepository {
         private const val KEY_ALL_PROFILES = "KEY_ALL_PROFILES"
         private const val KEY_IS_USER_LOGGED = "KEY_IS_USER_LOGGED"
         private const val KEY_CURRENT_PROFILE_ID = "KEY_CURRENT_PROFILE_ID"
-        private const val KEY_CURRENT_RENT_POINT_ID = "KEY_CURRENT_RENT_POINT_ID"
     }
 }

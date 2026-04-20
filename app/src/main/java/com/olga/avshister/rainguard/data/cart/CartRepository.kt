@@ -7,6 +7,4 @@ interface CartRepository {
     suspend fun addToCart(article: Long)
     suspend fun removeFromCart(article: Long)
     suspend fun clearCart()
-    fun getCurrentRentPointId(): Long
-    fun setCurrentRentPointId(id: Long)
 }

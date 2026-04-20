@@ -20,12 +20,4 @@ object CartLocalRepository: CartRepository {
     override suspend fun clearCart() {
         cart.products.clear()
     }
-
-    override fun getCurrentRentPointId(): Long {
-        TODO("Not yet implemented")
-    }
-
-    override fun setCurrentRentPointId(id: Long) {
-        TODO("Not yet implemented")
-    }
 }

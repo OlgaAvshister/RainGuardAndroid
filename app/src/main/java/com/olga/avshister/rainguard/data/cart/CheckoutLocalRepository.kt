@@ -23,7 +23,6 @@ class CheckoutLocalRepository(context: Context): CheckoutRepository {
     }
 
     companion object {
-        const val KEY_CHECKOUT_IDS = "KEY_CHECKOUT_IDS"
         const val KEY_CHECKOUT = "KEY_CHECKOUT"
     }
 }

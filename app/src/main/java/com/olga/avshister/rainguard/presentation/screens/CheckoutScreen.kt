@@ -49,13 +49,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.olga.avshister.rainguard.R
-import com.olga.avshister.rainguard.domain.Checkout
 import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.domain.rent.Rate
-import com.olga.avshister.rainguard.presentation.core.CARDS_SCREEN
 import com.olga.avshister.rainguard.presentation.state.BSheetContentState
 import com.olga.avshister.rainguard.presentation.ui.theme.RainGuardTheme
 import com.olga.avshister.rainguard.presentation.viewmodel.CheckoutViewModel

@@ -35,7 +35,7 @@ class RentTotalViewModel(application: Application) : AndroidViewModel(applicatio
                 val cost = Utils.calculateCost(
                     timeInMillis = elapsedTime,
                     rate = activeRent.rate,
-                    productsCount = activeRent.products.size
+                    productsCount = activeRent.productIds.size
                 )
 
                 val time = Utils.millisToHumanTime(elapsedTime)

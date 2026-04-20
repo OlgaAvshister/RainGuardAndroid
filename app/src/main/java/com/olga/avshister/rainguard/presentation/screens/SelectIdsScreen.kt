@@ -44,9 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.olga.avshister.rainguard.R
 import com.olga.avshister.rainguard.presentation.state.BSheetContentState
-import com.olga.avshister.rainguard.presentation.viewmodel.CustomerRentPointViewModel
 import com.olga.avshister.rainguard.presentation.viewmodel.SelectIdsViewModel
-import com.olga.avshister.rainguard.presentation.viewmodel.SmsCodeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

@@ -10,9 +10,8 @@ import com.olga.avshister.rainguard.data.cart.CheckoutLocalRepository
 import com.olga.avshister.rainguard.data.cart.CheckoutRepository
 import com.olga.avshister.rainguard.data.payment.CardRemoteRepository
 import com.olga.avshister.rainguard.data.payment.CardRepository
-import com.olga.avshister.rainguard.data.profile.AuthRemoteRepository
-import com.olga.avshister.rainguard.data.profile.AuthRepository
-import com.olga.avshister.rainguard.domain.cart.Cart
+import com.olga.avshister.rainguard.data.rent_point.RentPointRemoteRepository
+import com.olga.avshister.rainguard.data.rent_point.RentPointRepository
 import com.olga.avshister.rainguard.domain.payment.Card
 import com.olga.avshister.rainguard.domain.rent.Rent
 import kotlinx.coroutines.Dispatchers
@@ -21,9 +20,10 @@ import kotlinx.coroutines.withContext
 
 
 class PaymentViewModel(application: Application): AndroidViewModel(application) {
-    //private val authRepository: AuthRepository = AuthLocalRepository(application)
-    private val authRepository: AuthRepository = AuthRemoteRepository(application)
     private val cardRepository: CardRepository = CardRemoteRepository(application)
+
+    private val rentPointRepository: RentPointRepository = RentPointRemoteRepository(application)
+
     private val checkoutRepository: CheckoutRepository = CheckoutLocalRepository(application)
 
     sealed class PaymentUiState {
@@ -82,20 +82,15 @@ class PaymentViewModel(application: Application): AndroidViewModel(application) 
     fun confirmSelection(/*navController: NavController*/) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                val profile = authRepository.getProfile()!!
-                val checkoutProducts = checkoutRepository.getCheckout().products
+                val checkout = checkoutRepository.getCheckout()
 
                 selectedCard?.let { card ->
-                    authRepository.updateProfile(
-                        profile.copy(
-                            cart = Cart(arrayListOf()), // обнуляем корзину (подготовка для следующего заказа)
-                            activeRent = Rent(
-                                customerId = profile.id,
-                                startedAt = System.currentTimeMillis(),
-                                products = checkoutProducts,
-                                rate = checkoutRepository.getCheckout().rate,
-                                selectedPaymentCard = card
-                            )
+                    rentPointRepository.startRent(
+                        Rent(
+                            startedAt = System.currentTimeMillis(),
+                            productIds = checkout.products.map { it.id },
+                            rate = checkout.rate,
+                            cardNumber = card.number,
                         )
                     )
                 }

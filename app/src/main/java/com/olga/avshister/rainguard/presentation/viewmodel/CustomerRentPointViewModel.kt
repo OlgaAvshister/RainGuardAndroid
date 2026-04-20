@@ -5,8 +5,14 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
+import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl
+import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl.Companion.KEY_CURRENT_RENT_POINT_ID
+import com.olga.avshister.rainguard.data.profile.AuthRemoteRepository
 import com.olga.avshister.rainguard.data.profile.AuthRepository
+import com.olga.avshister.rainguard.data.rent.RentRepository
+import com.olga.avshister.rainguard.data.rent.RentRepositoryImpl
+import com.olga.avshister.rainguard.data.rent_point.RentPointRemoteRepository
+import com.olga.avshister.rainguard.data.rent_point.RentPointRepository
 import com.olga.avshister.rainguard.domain.filter.Filter
 import com.olga.avshister.rainguard.domain.products.Product.*
 import com.olga.avshister.rainguard.domain.profile.Profile
@@ -24,10 +30,16 @@ import kotlin.Long
 
 class CustomerRentPointViewModel(
     private val context: Context,
-    private val rentPoint: RentPoint,
+    rentPoint: RentPoint,
 ) : ViewModel() {
 
-    private val authRepository: AuthRepository = AuthLocalRepository(context)
+    init {
+        PrefsRepositoryImpl(context).setLong(KEY_CURRENT_RENT_POINT_ID, rentPoint.id)
+    }
+
+    private val authRepository: AuthRepository = AuthRemoteRepository(context)
+    private val rentRepository: RentRepository = RentRepositoryImpl(context)
+    private val rentPointRepository: RentPointRepository = RentPointRemoteRepository(context)
 
     private var timerJob: Job? = null
     private var profile: Profile? = null
@@ -68,7 +80,6 @@ class CustomerRentPointViewModel(
         Log.d("CUSTOMER_RENT_POINT_VM", "onIntent: $intent")
         when (intent) {
             is Intent.LoadData -> {
-                authRepository.setCurrentRentPointId(rentPoint.id)
                 loadProfile()
             }
             is Intent.SelectProductType -> {
@@ -118,18 +129,25 @@ class CustomerRentPointViewModel(
     private fun loadProfile() {
         viewModelScope.launch {
             profile = authRepository.getProfile()
-            profile?.activeRent?.let { rent ->
+            val activeRent = rentRepository.getActiveRent()
+            activeRent?.let { rent ->
+                val rentedProducts = rentPointRepository.searchProducts(
+                    ids = activeRent.productIds,
+                    rentPointId = activeRent.startRentPointId!!
+                )
                 _customerRentPointState.update {
                     it.copy(
                         loadingState = false,
                         rentState = RentState(
                             isLoading = false,
-                            items = rent.products,
+                            items = rentedProducts,
                             rate = rent.rate,
+                            startedAt = rent.startedAt,
                         )
                     )
                 }
                 startTimer()
+
             } ?: run {
                 // если активной аренды нет, то просто создаем RentState со значениями по умолчанию
                 // для запуска экрана с фильтрами
@@ -143,7 +161,7 @@ class CustomerRentPointViewModel(
         }
     }
 
-    private fun getStartTime() = profile?.activeRent?.startedAt
+    private fun getStartTime() = customerRentPointState.value.rentState.startedAt
 
     private fun startTimer() {
         Log.d("CUSTOMER_RENT_POINT_VM", "startTimer")
@@ -168,19 +186,16 @@ class CustomerRentPointViewModel(
 
     private fun updateTime(timeInMillis: Long) {
         Log.d("CUSTOMER_RENT_POINT_VM", "updateTime: timeInMillis=$timeInMillis")
-        profile?.activeRent?.let { rent ->
-            _customerRentPointState.update {
-                it.copy(
-                    rentState = it.rentState.copy(
-                        rentTime = Utils.millisToHumanTime(timeInMillis),
-                        cost = Utils.calculateCost(
-                            timeInMillis = timeInMillis,
-                            rate = rent.rate,
-                            productsCount = rent.products.size),
-                        items = rent.products,
-                    )
+        _customerRentPointState.update {
+            it.copy(
+                rentState = it.rentState.copy(
+                    rentTime = Utils.millisToHumanTime(timeInMillis),
+                    cost = Utils.calculateCost(
+                        timeInMillis = timeInMillis,
+                        rate = it.rentState.rate,
+                        productsCount = it.rentState.items.size),
                 )
-            }
+            )
         }
     }
 

@@ -44,6 +44,14 @@ object RentPointLocalRepository: RentPointRepository {
         availableProducts = generateProductsDataset()
     )
 
+    override suspend fun setRentPointId(id: Long) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getRentPointId(): Long {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun registerRentPoint(rentPoint: RentPoint) {
         allRentPoints.add(rentPoint)
     }
@@ -83,6 +91,10 @@ object RentPointLocalRepository: RentPointRepository {
     override fun deleteRentPoint(rentPointId: Long) {
         val index = allRentPoints.indexOfFirst { it.id == rentPointId }
         allRentPoints.removeAt(index)
+    }
+
+    override suspend fun startRent(rent: Rent) {
+        TODO("Not yet implemented")
     }
 
     override fun finishRent(

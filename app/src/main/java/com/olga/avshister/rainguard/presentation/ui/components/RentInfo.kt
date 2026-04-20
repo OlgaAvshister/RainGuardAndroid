@@ -186,7 +186,6 @@ fun RentInfoPreview() {
                 rentTime = "02:04:38",
                 cost = 1050,
                 isLoading = false,
-                error = null,
                 )
             )
     }

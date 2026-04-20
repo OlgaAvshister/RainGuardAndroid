@@ -2,11 +2,8 @@ package com.olga.avshister.rainguard.data.common
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.google.gson.Gson
-
 
 class PrefsRepositoryImpl(context: Context): PrefsRepository {
-    private val gson: Gson = Gson()
 
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -43,7 +40,6 @@ class PrefsRepositoryImpl(context: Context): PrefsRepository {
 
     companion object {
         private const val PREFS_NAME = "app_preferences"
-        private const val KEY_PROFILE = "key_profile"
-        private const val KEY_CART = "key_cart"
+        const val KEY_CURRENT_RENT_POINT_ID = "key_current_rent_point_id"
     }
 }
