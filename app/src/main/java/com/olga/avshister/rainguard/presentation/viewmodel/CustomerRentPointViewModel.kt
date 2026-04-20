@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl
-import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl.Companion.KEY_CURRENT_RENT_POINT_ID
+import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl.Companion.KEY_START_RENT_POINT_ID
 import com.olga.avshister.rainguard.data.profile.AuthRemoteRepository
 import com.olga.avshister.rainguard.data.profile.AuthRepository
 import com.olga.avshister.rainguard.data.rent.RentRepository
@@ -30,12 +30,8 @@ import kotlin.Long
 
 class CustomerRentPointViewModel(
     private val context: Context,
-    rentPoint: RentPoint,
+    private val rentPoint: RentPoint,
 ) : ViewModel() {
-
-    init {
-        PrefsRepositoryImpl(context).setLong(KEY_CURRENT_RENT_POINT_ID, rentPoint.id)
-    }
 
     private val authRepository: AuthRepository = AuthRemoteRepository(context)
     private val rentRepository: RentRepository = RentRepositoryImpl(context)
@@ -131,6 +127,8 @@ class CustomerRentPointViewModel(
             profile = authRepository.getProfile()
             val activeRent = rentRepository.getActiveRent()
             activeRent?.let { rent ->
+                // Поскольку здесь мы просматриваем инфо о текущей аренде, считаем что и сдавать товары будем здесь
+                rentPointRepository.setFinishRentPointId(rentPoint.id)
                 val rentedProducts = rentPointRepository.searchProducts(
                     ids = activeRent.productIds,
                     rentPointId = activeRent.startRentPointId!!
@@ -149,6 +147,9 @@ class CustomerRentPointViewModel(
                 startTimer()
 
             } ?: run {
+                // Пользователь без активной аренды заходит в пункт аренды, сохраняем его
+                rentPointRepository.setStartRentPointId(rentPoint.id)
+
                 // если активной аренды нет, то просто создаем RentState со значениями по умолчанию
                 // для запуска экрана с фильтрами
                 _customerRentPointState.update {

@@ -8,8 +8,8 @@ import com.olga.avshister.rainguard.data.cart.CartLocalRepository
 import com.olga.avshister.rainguard.data.cart.CartRepository
 import com.olga.avshister.rainguard.data.cart.CheckoutLocalRepository
 import com.olga.avshister.rainguard.data.cart.CheckoutRepository
-import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
-import com.olga.avshister.rainguard.data.profile.AuthRepository
+import com.olga.avshister.rainguard.data.rent.RentRepository
+import com.olga.avshister.rainguard.data.rent.RentRepositoryImpl
 import com.olga.avshister.rainguard.data.rent_point.RentPointRemoteRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointRepository
 import com.olga.avshister.rainguard.domain.Checkout
@@ -26,10 +26,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SelectIdsViewModel(context: Context, val openToTake: Boolean, val rentPointId: Long): ViewModel() {
-    private val authRepository: AuthRepository = AuthLocalRepository(context)
-    //private val rentPointRepository: RentPointRepository = RentPointLocalRepository
     private val rentPointRepository: RentPointRepository = RentPointRemoteRepository(context)
 
+    private val rentRepository: RentRepository = RentRepositoryImpl(context)
     private val checkoutRepository: CheckoutRepository = CheckoutLocalRepository(context)
     private val cartRepository: CartRepository = CartLocalRepository
 
@@ -89,8 +88,7 @@ class SelectIdsViewModel(context: Context, val openToTake: Boolean, val rentPoin
                     }
                     false -> {
                         // инвентарные номера товаров из активной аренды
-                        // todo: сюда еще нужно будет вернуться при переводе завершения аренды на remote
-                        authRepository.getProfile()?.activeRent?.productIds ?: emptyList()
+                        rentRepository.getActiveRent()?.productIds ?: emptyList()
                     }
                 }
                 _state.update { it.copy(

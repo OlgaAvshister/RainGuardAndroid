@@ -40,6 +40,7 @@ class PrefsRepositoryImpl(context: Context): PrefsRepository {
 
     companion object {
         private const val PREFS_NAME = "app_preferences"
-        const val KEY_CURRENT_RENT_POINT_ID = "key_current_rent_point_id"
+        const val KEY_START_RENT_POINT_ID = "key_current_rent_point_id"
+        const val KEY_FINISH_RENT_POINT_ID = "key_finish_rent_point_id"
     }
 }

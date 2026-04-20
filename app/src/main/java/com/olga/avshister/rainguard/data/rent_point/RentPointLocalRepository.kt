@@ -44,11 +44,19 @@ object RentPointLocalRepository: RentPointRepository {
         availableProducts = generateProductsDataset()
     )
 
-    override suspend fun setRentPointId(id: Long) {
+    override suspend fun setStartRentPointId(id: Long) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun getRentPointId(): Long {
+    override suspend fun getStartRentPointId(): Long {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun setFinishRentPointId(id: Long) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getFinishRentPointId(): Long {
         TODO("Not yet implemented")
     }
 
@@ -97,12 +105,7 @@ object RentPointLocalRepository: RentPointRepository {
         TODO("Not yet implemented")
     }
 
-    override fun finishRent(
-        rentId: Long,
-        rentPointId: Long,
-        products: List<Product>,
-        finishTime: Long
-    ) {
+    override suspend fun finishRent(rent: Rent) {
         TODO("Not yet implemented")
     }
 

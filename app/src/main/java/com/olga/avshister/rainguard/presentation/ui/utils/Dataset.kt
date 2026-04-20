@@ -143,7 +143,8 @@ object Dataset {
                     finishedAt = completedAt,
                     productIds = products.map { it.id },
                     cardNumber = card.number,
-                    rate = rate
+                    rate = rate,
+                    startRentPointId = Random.nextLong(1, 3)
                 )
             )
         }
@@ -300,7 +301,8 @@ object Dataset {
                     finishedAt = completedAt,
                     productIds = products.map { it.id },
                     cardNumber = card.number,
-                    rate = rate
+                    rate = rate,
+                    startRentPointId = Random.nextLong(1, 3)
                 )
             )
         }

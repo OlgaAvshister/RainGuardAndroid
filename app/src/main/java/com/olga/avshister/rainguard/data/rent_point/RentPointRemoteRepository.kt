@@ -3,14 +3,15 @@ package com.olga.avshister.rainguard.data.rent_point
 import android.content.Context
 import com.olga.avshister.rainguard.data.common.PrefsRepository
 import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl
-import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl.Companion.KEY_CURRENT_RENT_POINT_ID
+import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl.Companion.KEY_FINISH_RENT_POINT_ID
+import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl.Companion.KEY_START_RENT_POINT_ID
 import com.olga.avshister.rainguard.data.network.NetworkClient
 import com.olga.avshister.rainguard.data.network.rentPoint.RentPointNet.Companion.toDomain
-import com.olga.avshister.rainguard.data.network.rentPoint.StartRentRequest
 import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository.matchesFilter
 import com.olga.avshister.rainguard.domain.filter.Filter
 import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.domain.rent.Rent
+import com.olga.avshister.rainguard.domain.rent.Rent.Companion.toNet
 import com.olga.avshister.rainguard.domain.rent.RentPoint
 
 /**
@@ -20,12 +21,20 @@ class RentPointRemoteRepository(val context: Context): RentPointRepository {
     private val prefs: PrefsRepository = PrefsRepositoryImpl(context)
     val apiService = NetworkClient(context).apiService
 
-    override suspend fun setRentPointId(id: Long) {
-        prefs.setLong(KEY_CURRENT_RENT_POINT_ID, id)
+    override suspend fun setStartRentPointId(id: Long) {
+        prefs.setLong(KEY_START_RENT_POINT_ID, id)
     }
 
-    override suspend fun getRentPointId(): Long {
-        return prefs.getLong(KEY_CURRENT_RENT_POINT_ID, -1)
+    override suspend fun getStartRentPointId(): Long {
+        return prefs.getLong(KEY_START_RENT_POINT_ID, -1)
+    }
+
+    override suspend fun setFinishRentPointId(id: Long) {
+        prefs.setLong(KEY_FINISH_RENT_POINT_ID, id)
+    }
+
+    override suspend fun getFinishRentPointId(): Long {
+        return prefs.getLong(KEY_FINISH_RENT_POINT_ID, -1)
     }
 
     override suspend fun registerRentPoint(rentPoint: RentPoint) {
@@ -80,23 +89,11 @@ class RentPointRemoteRepository(val context: Context): RentPointRepository {
     }
 
     override suspend fun startRent(rent: Rent) {
-        val request = StartRentRequest(
-            startRentPointId = prefs.getLong(KEY_CURRENT_RENT_POINT_ID),
-            startedAt = rent.startedAt,
-            productIds = rent.productIds,
-            cardNumber = rent.cardNumber,
-            rate = rent.rate,
-        )
-        apiService.startRent(request)
+        apiService.startRent(rent.toNet())
     }
 
-    override fun finishRent(
-        rentId: Long,
-        rentPointId: Long,
-        products: List<Product>,
-        finishTime: Long
-    ) {
-        TODO("Not yet implemented")
+    override suspend fun finishRent(rent: Rent) {
+        apiService.finishRent(rent.toNet())
     }
 
     override fun addStuff(firstName: String, phone: String) {

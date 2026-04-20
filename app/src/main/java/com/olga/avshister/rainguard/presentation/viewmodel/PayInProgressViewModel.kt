@@ -3,8 +3,10 @@ package com.olga.avshister.rainguard.presentation.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
-import com.olga.avshister.rainguard.data.profile.AuthRepository
+import com.olga.avshister.rainguard.data.rent.RentRepository
+import com.olga.avshister.rainguard.data.rent.RentRepositoryImpl
+import com.olga.avshister.rainguard.data.rent_point.RentPointRemoteRepository
+import com.olga.avshister.rainguard.data.rent_point.RentPointRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,14 +14,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class PayInProgressViewModel(application: Application): AndroidViewModel(application) {
-    val authRepository: AuthRepository = AuthLocalRepository(application)
+    val rentPointRepository: RentPointRepository = RentPointRemoteRepository(application)
+    val rentRepository: RentRepository = RentRepositoryImpl(application)
 
     private val _state: MutableStateFlow<State> = MutableStateFlow(
         State(isLoading = true, isPayFinished = false)
     )
     val state: MutableStateFlow<State> = _state
 
-    val mockPayTime = 3000L
+    val mockPayTime = 2000L
 
     data class State(
         val isLoading: Boolean,
@@ -55,9 +58,11 @@ class PayInProgressViewModel(application: Application): AndroidViewModel(applica
     }
 
     private suspend fun finishRent() {
-        authRepository.finishRent(timeNow = System.currentTimeMillis())
-        authRepository.getProfile()?.let {
-            authRepository.updateProfile(it.copy(activeRent = null))
-        }
+        val activeRent = rentRepository.getActiveRent()!!
+        rentPointRepository.finishRent(
+            activeRent.copy(
+                finishedAt = System.currentTimeMillis(),
+                finishRentPointId = rentPointRepository.getFinishRentPointId()
+        ))
     }
 }

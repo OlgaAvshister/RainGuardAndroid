@@ -6,8 +6,12 @@ import com.olga.avshister.rainguard.domain.rent.Rent
 import com.olga.avshister.rainguard.domain.rent.RentPoint
 
 interface RentPointRepository {
-    suspend fun setRentPointId(id: Long)
-    suspend fun getRentPointId(): Long
+    suspend fun setStartRentPointId(id: Long)
+    suspend fun getStartRentPointId(): Long
+
+    suspend fun setFinishRentPointId(id: Long)
+    suspend fun getFinishRentPointId(): Long
+
     suspend fun registerRentPoint(rentPoint: RentPoint)
     suspend fun getRentPoints(): List<RentPoint>
     suspend fun getRentPointById(id: Long): RentPoint?
@@ -23,10 +27,9 @@ interface RentPointRepository {
 
     /**
      * Завершить аренду в выбранной точке возврата.
-     * Добавить прибыль
-     * Добавить товары в эту точку возврата
+     * Перенести товары из Rent в точку возврата
      */
-    fun finishRent(rentId: Long, rentPointId: Long, products: List<Product>, finishTime: Long)
+    suspend fun finishRent(rent: Rent)
 
     fun addStuff(firstName: String, phone: String)
     fun addProduct(rentPointId: Long, product: Product)

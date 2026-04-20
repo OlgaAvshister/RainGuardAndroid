@@ -87,6 +87,7 @@ class PaymentViewModel(application: Application): AndroidViewModel(application) 
                 selectedCard?.let { card ->
                     rentPointRepository.startRent(
                         Rent(
+                            startRentPointId = rentPointRepository.getStartRentPointId(),
                             startedAt = System.currentTimeMillis(),
                             productIds = checkout.products.map { it.id },
                             rate = checkout.rate,

@@ -3,8 +3,8 @@ package com.olga.avshister.rainguard.presentation.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
-import com.olga.avshister.rainguard.data.profile.AuthRepository
+import com.olga.avshister.rainguard.data.rent.RentRepository
+import com.olga.avshister.rainguard.data.rent.RentRepositoryImpl
 import com.olga.avshister.rainguard.presentation.state.rent.RentTotalState
 import com.olga.avshister.rainguard.presentation.ui.utils.Utils
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RentTotalViewModel(application: Application) : AndroidViewModel(application) {
-    private val authRepository: AuthRepository = AuthLocalRepository(application)
+    private val rentRepository: RentRepository = RentRepositoryImpl(application)
     private val _state = MutableStateFlow(
         RentTotalState(
             totalTime = "",
@@ -29,7 +29,7 @@ class RentTotalViewModel(application: Application) : AndroidViewModel(applicatio
             _state.update {
                 it.copy(isLoading = true)
             }
-            val activeRent = authRepository.getProfile()?.activeRent
+            val activeRent = rentRepository.getActiveRent()
             activeRent?.let {
                 val elapsedTime = System.currentTimeMillis() - activeRent.startedAt
                 val cost = Utils.calculateCost(
