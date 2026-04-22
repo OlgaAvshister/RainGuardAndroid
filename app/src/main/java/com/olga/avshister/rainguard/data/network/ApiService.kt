@@ -12,6 +12,7 @@ import com.olga.avshister.rainguard.data.network.rent.RentNet
 import com.olga.avshister.rainguard.data.network.rentPoint.RentPointNet
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
@@ -53,4 +54,7 @@ interface ApiService {
 
     @POST("registerProduct")
     suspend fun registerProduct(@Body request: RegisterProductRequest)
+
+    @DELETE("deleteRentPoint")
+    suspend fun deleteRentPoint(@Query("rentPointId") rentPointId: Long)
 }

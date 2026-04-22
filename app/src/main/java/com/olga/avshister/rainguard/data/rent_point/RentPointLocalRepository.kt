@@ -96,7 +96,7 @@ object RentPointLocalRepository: RentPointRepository {
             ?.filter { it.id in ids } ?: emptyList()
     }
 
-    override fun deleteRentPoint(rentPointId: Long) {
+    override suspend fun deleteRentPoint(rentPointId: Long) {
         val index = allRentPoints.indexOfFirst { it.id == rentPointId }
         allRentPoints.removeAt(index)
     }

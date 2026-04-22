@@ -87,8 +87,8 @@ class RentPointRemoteRepository(val context: Context): RentPointRepository {
         return foundProducts ?: emptyList()
     }
 
-    override fun deleteRentPoint(rentPointId: Long) {
-        TODO("Not yet implemented")
+    override suspend fun deleteRentPoint(rentPointId: Long) {
+        apiService.deleteRentPoint(rentPointId)
     }
 
     override suspend fun startRent(rent: Rent) {

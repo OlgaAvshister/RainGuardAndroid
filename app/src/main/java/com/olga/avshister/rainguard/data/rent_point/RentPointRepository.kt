@@ -21,7 +21,7 @@ interface RentPointRepository {
 
     suspend fun searchProducts(ids: List<Long>, rentPointId: Long): List<Product>
 
-    fun deleteRentPoint(rentPointId: Long)
+    suspend fun deleteRentPoint(rentPointId: Long)
 
     suspend fun startRent(rent: Rent)
 
