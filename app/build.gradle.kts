@@ -23,6 +23,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        multiDexEnabled = true
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // Загружаем local.properties
@@ -98,6 +100,8 @@ dependencies {
 
     // для шифрования токенов и прочей чувствительной информации
     implementation(libs.androidx.security.crypto)
+
+    implementation(libs.androidx.multidex)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

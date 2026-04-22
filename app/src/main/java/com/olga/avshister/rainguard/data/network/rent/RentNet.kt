@@ -2,7 +2,9 @@ package com.olga.avshister.rainguard.data.network.rent
 
 import com.olga.avshister.rainguard.domain.rent.Rate
 import com.olga.avshister.rainguard.domain.rent.Rent
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class RentNet(
     val startedAt: Long, // время начала аренды в Unix-формате,
     val finishedAt: Long? = null, // время завершения аренды (если аренда уже завершена, оплачена),

@@ -3,9 +3,10 @@ package com.olga.avshister.rainguard.presentation.viewmodel.owner
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
+import com.olga.avshister.rainguard.data.profile.AuthRemoteRepository
 import com.olga.avshister.rainguard.data.profile.AuthRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository
+import com.olga.avshister.rainguard.data.rent_point.RentPointRemoteRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointRepository
 import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.domain.rent.Rent
@@ -21,8 +22,8 @@ import kotlinx.coroutines.launch
 
 class OwnerRentPointViewModel(application: Application): AndroidViewModel(application) {
 
-    val authRepository: AuthRepository = AuthLocalRepository(application)
-    val rentPointRepository: RentPointRepository = RentPointLocalRepository
+    val authRepository: AuthRepository = AuthRemoteRepository(application)
+    val rentPointRepository: RentPointRepository = RentPointRemoteRepository(application)
 
     private val _uiState = MutableStateFlow(OwnerUiState())
     val uiState: StateFlow<OwnerUiState> = _uiState.asStateFlow()
@@ -34,11 +35,11 @@ class OwnerRentPointViewModel(application: Application): AndroidViewModel(applic
     val financialData: StateFlow<List<Rent>> = _financialData.asStateFlow()
 
     // Добавление сотрудника
-    fun addStuff(name: String, phone: String) {
+    fun registerStuff(name: String, phone: String) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             try {
-                authRepository.addStuff(name, phone)
+                authRepository.registerStuff(name, phone)
                 _uiState.update {
                     it.copy(
                         isLoading = false,

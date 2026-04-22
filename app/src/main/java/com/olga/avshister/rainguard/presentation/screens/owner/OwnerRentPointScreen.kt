@@ -73,7 +73,7 @@ fun OwnerRentPointScreen(
             item {
                 AddStuffSection(
                     onAddStuff = { name, phone ->
-                        viewModel.addStuff(name, phone)
+                        viewModel.registerStuff(name, phone)
                     }
                 )
             }

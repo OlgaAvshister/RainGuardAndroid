@@ -129,7 +129,7 @@ object RentPointLocalRepository: RentPointRepository {
         allRentPoints[index] = modifiedRentPoint
     }
 
-    override fun getCompletedRents(rentPointId: Long): List<Rent> {
+    override suspend fun getCompletedRents(rentPointId: Long): List<Rent> {
         // todo: сделать отдельный репозиторий под завершенные аренды. в этом репозитории наверное нехорошо хранить? т.к. аренда може тбыть начата в одном пункте, а завершена в другом
         return generateCompletedRents()
     }

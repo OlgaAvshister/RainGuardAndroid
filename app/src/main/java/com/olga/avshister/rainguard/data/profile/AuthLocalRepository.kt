@@ -119,7 +119,7 @@ class AuthLocalRepository(context: Context): AuthRepository {
         }
     }
 
-    override fun addStuff(name: String, phone: String) {
+    override suspend fun registerStuff(name: String, phone: String) {
         registerUser(name = name, phone = phone, role = Role.STUFF)
     }
 

@@ -3,16 +3,14 @@ package com.olga.avshister.rainguard.presentation.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
+import com.olga.avshister.rainguard.data.profile.AuthRemoteRepository
 import com.olga.avshister.rainguard.data.profile.AuthRepository
-import com.olga.avshister.rainguard.domain.profile.Role
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(application: Application): AndroidViewModel(application) {
-    private val authRepository: AuthRepository = AuthLocalRepository(application)
+    private val authRepository: AuthRepository = AuthRemoteRepository(application)
 
     private val _state =  MutableStateFlow<ProfileState>(ProfileState(isLoading = true))
     val state: StateFlow<ProfileState> = _state

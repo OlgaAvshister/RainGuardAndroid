@@ -6,6 +6,7 @@ import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl
 import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl.Companion.KEY_FINISH_RENT_POINT_ID
 import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl.Companion.KEY_START_RENT_POINT_ID
 import com.olga.avshister.rainguard.data.network.NetworkClient
+import com.olga.avshister.rainguard.data.network.rent.RentNet.Companion.toDomain
 import com.olga.avshister.rainguard.data.network.rentPoint.RentPointNet.Companion.toDomain
 import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository.matchesFilter
 import com.olga.avshister.rainguard.domain.filter.Filter
@@ -46,7 +47,7 @@ class RentPointRemoteRepository(val context: Context): RentPointRepository {
     }
 
     override suspend fun getRentPointById(id: Long): RentPoint? {
-        TODO("Not yet implemented")
+        return runCatching { apiService.getRentPoints().toDomain().first { it.id == id } }.getOrNull()
     }
 
     override suspend fun searchProducts(filter: Filter?, rentPointId: Long): List<Product> {
@@ -104,7 +105,7 @@ class RentPointRemoteRepository(val context: Context): RentPointRepository {
         TODO("Not yet implemented")
     }
 
-    override fun getCompletedRents(rentPointId: Long): List<Rent> {
-        TODO("Not yet implemented")
+    override suspend fun getCompletedRents(rentPointId: Long): List<Rent> {
+        return apiService.getCompletedRents(rentPointId).map { it.toDomain() }
     }
 }

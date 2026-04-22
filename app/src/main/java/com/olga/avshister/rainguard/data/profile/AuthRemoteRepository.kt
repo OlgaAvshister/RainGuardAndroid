@@ -5,9 +5,13 @@ import com.olga.avshister.rainguard.data.network.AuthInterceptor.Companion.TOKEN
 import com.olga.avshister.rainguard.data.network.NetworkClient
 import com.olga.avshister.rainguard.data.network.TokenManager
 import com.olga.avshister.rainguard.data.network.auth.AuthRequest
+import com.olga.avshister.rainguard.data.network.owner.RegisterStuffRequest
+import com.olga.avshister.rainguard.data.network.profile.ProfileNet
 import com.olga.avshister.rainguard.data.network.profile.ProfileNet.Companion.toDomain
 import com.olga.avshister.rainguard.domain.cart.Cart
 import com.olga.avshister.rainguard.domain.profile.Profile
+import com.olga.avshister.rainguard.domain.profile.Role
+import kotlin.random.Random
 
 class AuthRemoteRepository(val context: Context): AuthRepository {
     val apiService = NetworkClient(context).apiService
@@ -45,8 +49,8 @@ class AuthRemoteRepository(val context: Context): AuthRepository {
         TODO("Not yet implemented")
     }
 
-    override fun addStuff(name: String, phone: String) {
-        TODO("Not yet implemented")
+    override suspend fun registerStuff(name: String, phone: String) {
+        apiService.registerStuff(RegisterStuffRequest(name, phone, Role.STUFF.name))
     }
 
     override suspend fun getCart(): Cart? {

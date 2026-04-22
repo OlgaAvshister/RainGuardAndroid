@@ -14,5 +14,5 @@ interface AuthRepository: CartRepository {
 
     fun finishRent(timeNow: Long)
 
-    fun addStuff(name: String, phone: String)
+    suspend fun registerStuff(name: String, phone: String)
 }
