@@ -8,7 +8,7 @@ import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository.ren
 import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository.rentPoint3
 import com.olga.avshister.rainguard.domain.payment.Card
 import com.olga.avshister.rainguard.domain.products.Product
-import com.olga.avshister.rainguard.domain.products.Product.Companion.withGeneratedArticul
+import com.olga.avshister.rainguard.domain.products.Product.Companion.withGeneratedArticle
 import com.olga.avshister.rainguard.domain.rent.Rate
 import com.olga.avshister.rainguard.domain.rent.Rent
 import com.olga.avshister.rainguard.domain.rent.RentPoint
@@ -67,7 +67,7 @@ object Dataset {
                 ).random(),
                 size = null,
                 condition = Product.ProductCondition.values().random()
-            ).withGeneratedArticul()
+            ).withGeneratedArticle()
         }
 
         fun generateRaincoat(): Product {
@@ -83,7 +83,7 @@ object Dataset {
                 ).random(),
                 size = Product.Size.values().random(),
                 condition = Product.ProductCondition.values().random()
-            ).withGeneratedArticul()
+            ).withGeneratedArticle()
         }
 
         return when (generateProductType()) {

@@ -3,7 +3,9 @@ package com.olga.avshister.rainguard.data.network
 import com.olga.avshister.rainguard.data.network.auth.AuthRequest
 import com.olga.avshister.rainguard.data.network.auth.AuthResponse
 import com.olga.avshister.rainguard.data.network.card.CardContract
+import com.olga.avshister.rainguard.data.network.owner.RegisterProductRequest
 import com.olga.avshister.rainguard.data.network.owner.RegisterStuffRequest
+import com.olga.avshister.rainguard.data.network.product.ProductNet
 import com.olga.avshister.rainguard.data.network.profile.ProfileNet
 import com.olga.avshister.rainguard.data.network.rent.ActiveRentResponse
 import com.olga.avshister.rainguard.data.network.rent.RentNet
@@ -48,4 +50,7 @@ interface ApiService {
 
     @POST("registerStuff")
     suspend fun registerStuff(@Body request: RegisterStuffRequest)
+
+    @POST("registerProduct")
+    suspend fun registerProduct(@Body request: RegisterProductRequest)
 }

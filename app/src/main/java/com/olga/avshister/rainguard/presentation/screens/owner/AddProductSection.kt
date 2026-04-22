@@ -7,7 +7,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.olga.avshister.rainguard.domain.products.Product
-import com.olga.avshister.rainguard.domain.products.Product.Companion.withGeneratedArticul
+import com.olga.avshister.rainguard.domain.products.Product.Companion.withGeneratedArticle
 import com.olga.avshister.rainguard.presentation.ui.components.CustomDropdownMenu
 
 @Composable
@@ -104,7 +104,7 @@ fun AddProductSection(
                                     color = selectedColor!!,
                                     printType = selectedPrintType!!,
                                     size = null,
-                                ).withGeneratedArticul()
+                                ).withGeneratedArticle()
                             )
                             // Очищаем форму
                             productId = ""

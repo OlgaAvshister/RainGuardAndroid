@@ -6,11 +6,13 @@ import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl
 import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl.Companion.KEY_FINISH_RENT_POINT_ID
 import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl.Companion.KEY_START_RENT_POINT_ID
 import com.olga.avshister.rainguard.data.network.NetworkClient
+import com.olga.avshister.rainguard.data.network.owner.RegisterProductRequest
 import com.olga.avshister.rainguard.data.network.rent.RentNet.Companion.toDomain
 import com.olga.avshister.rainguard.data.network.rentPoint.RentPointNet.Companion.toDomain
 import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository.matchesFilter
 import com.olga.avshister.rainguard.domain.filter.Filter
 import com.olga.avshister.rainguard.domain.products.Product
+import com.olga.avshister.rainguard.domain.products.Product.Companion.toNet
 import com.olga.avshister.rainguard.domain.rent.Rent
 import com.olga.avshister.rainguard.domain.rent.Rent.Companion.toNet
 import com.olga.avshister.rainguard.domain.rent.RentPoint
@@ -97,12 +99,12 @@ class RentPointRemoteRepository(val context: Context): RentPointRepository {
         apiService.finishRent(rent.toNet())
     }
 
-    override fun addStuff(firstName: String, phone: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun addProduct(rentPointId: Long, product: Product) {
-        TODO("Not yet implemented")
+    override suspend fun addProduct(rentPointId: Long, product: Product) {
+        apiService.registerProduct(
+            RegisterProductRequest(
+                rentPointId = rentPointId, product = product.toNet()
+            )
+        )
     }
 
     override suspend fun getCompletedRents(rentPointId: Long): List<Rent> {

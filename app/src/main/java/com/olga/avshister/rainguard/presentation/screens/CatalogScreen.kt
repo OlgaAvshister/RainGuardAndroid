@@ -51,7 +51,7 @@ import com.olga.avshister.rainguard.data.rent_point.RentPointRemoteRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointRepository
 import com.olga.avshister.rainguard.domain.filter.Filter
 import com.olga.avshister.rainguard.domain.products.Product
-import com.olga.avshister.rainguard.domain.products.Product.Companion.toSetByArticul
+import com.olga.avshister.rainguard.domain.products.Product.Companion.toSetByArticle
 import com.olga.avshister.rainguard.presentation.state.BSheetContentState
 import com.olga.avshister.rainguard.presentation.ui.components.PrimaryButton
 
@@ -82,7 +82,7 @@ fun CatalogScreen(
 
     LaunchedEffect(Unit) {
         products = rentPointRepository.searchProducts(filter, rentPointId).apply {
-            productGroups = this.toSetByArticul()
+            productGroups = this.toSetByArticle()
         }
     }
 

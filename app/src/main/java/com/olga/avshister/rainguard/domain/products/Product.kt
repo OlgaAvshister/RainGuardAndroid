@@ -1,6 +1,7 @@
 package com.olga.avshister.rainguard.domain.products
 
 import com.olga.avshister.rainguard.R
+import com.olga.avshister.rainguard.data.network.product.ProductNet
 import kotlin.math.absoluteValue
 
 data class Product(
@@ -103,9 +104,9 @@ data class Product(
          * Extension-функция для генерации артикула
          *
          * Все продукты с одинаковыми характеристиками (кроме id)
-         * будут иметь одинаковый articul.
+         * будут иметь одинаковый article.
          */
-        fun Product.generateArticul(): Long {
+        fun Product.generateArticle(): Long {
             val key = buildString {
                 append(productType.name)
                 append("|")
@@ -124,17 +125,30 @@ data class Product(
         /**
          * Возвращает копию товара с заполненным артикулом
          */
-        fun Product.withGeneratedArticul(): Product {
+        fun Product.withGeneratedArticle(): Product {
             return this.copy(
-                article = generateArticul()
+                article = generateArticle()
             )
         }
 
         /**
          * Разбиваем на группы таким образом, чтобы в каталоге выводились только товары с разными артикулами, повторов быть не должно
          */
-        fun List<Product>.toSetByArticul(): List<Product> {
+        fun List<Product>.toSetByArticle(): List<Product> {
             return this.distinctBy { it.article }
+        }
+
+        fun Product.toNet(): ProductNet {
+            return ProductNet(
+                id = id,
+                productType = productType,
+                article = article,
+                printType = printType,
+                color = color,
+                formFactor = formFactor,
+                size = size,
+                condition = condition
+            )
         }
     }
 }

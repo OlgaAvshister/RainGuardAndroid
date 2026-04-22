@@ -109,11 +109,7 @@ object RentPointLocalRepository: RentPointRepository {
         TODO("Not yet implemented")
     }
 
-    override fun addStuff(firstName: String, phone: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun addProduct(rentPointId: Long, product: Product) {
+    override suspend fun addProduct(rentPointId: Long, product: Product) {
         val index = allRentPoints.indexOfFirst { it.id == rentPointId }
         val initialRentPoint = allRentPoints[index]
         val modifiedAvailableProducts = initialRentPoint.availableProducts.toMutableList()

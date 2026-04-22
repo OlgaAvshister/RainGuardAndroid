@@ -31,7 +31,6 @@ interface RentPointRepository {
      */
     suspend fun finishRent(rent: Rent)
 
-    fun addStuff(firstName: String, phone: String)
-    fun addProduct(rentPointId: Long, product: Product)
+    suspend fun addProduct(rentPointId: Long, product: Product)
     suspend fun getCompletedRents(rentPointId: Long): List<Rent>
 }
