@@ -36,8 +36,21 @@ fun PrimaryButton(
 fun SecondaryButton(
     text: String,
     modifier: Modifier = Modifier,
+    isChecked: Boolean = false,
     onClick: () -> Unit,
 ) {
+    val containerColor = if(isChecked) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.secondary
+    }
+
+    val contentColor = if(isChecked) {
+        MaterialTheme.colorScheme.onPrimary
+    } else {
+        MaterialTheme.colorScheme.onSecondary
+    }
+
     Button(
         modifier = modifier
             .width(224.dp)
@@ -46,8 +59,8 @@ fun SecondaryButton(
             onClick.invoke()
         },
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.secondary,
-            contentColor = MaterialTheme.colorScheme.onSecondary,
+            containerColor = containerColor,
+            contentColor = contentColor,
         )
     ) {
         Text(

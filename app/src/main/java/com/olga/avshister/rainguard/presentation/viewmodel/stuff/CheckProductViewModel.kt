@@ -5,8 +5,10 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import com.olga.avshister.rainguard.R
-import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
+import com.olga.avshister.rainguard.data.profile.AuthRemoteRepository
 import com.olga.avshister.rainguard.data.profile.AuthRepository
+import com.olga.avshister.rainguard.data.rent_point.RentPointRemoteRepository
+import com.olga.avshister.rainguard.data.rent_point.RentPointRepository
 import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.presentation.core.AUTH_PHONE_SCREEN
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -14,18 +16,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlin.Long
+import kotlin.String
 
 class CheckProductViewModel(application: Application) : AndroidViewModel(application) {
-    val authRepository: AuthRepository = AuthLocalRepository(application)
+    val authRepository: AuthRepository = AuthRemoteRepository(application)
+    val rentPointRepository: RentPointRepository = RentPointRemoteRepository(application)
 
-    // Каналы для событий навигации
-    private val _navigationEvent = MutableSharedFlow<NavigationEvent>()
-    val navigationEvent: SharedFlow<NavigationEvent> = _navigationEvent
+    private val _event = MutableSharedFlow<Event>()
+    val event: SharedFlow<Event> = _event
 
     private val _screenState = MutableStateFlow(
         value = State(
             CheckProductState.FillProductId(
-                id = 0,
+                id = "",
                 titleText = application.getString(R.string.fill_product_id_to_check),
                 bottomButtonText = application.getString(R.string.next)
             )
@@ -36,42 +40,85 @@ class CheckProductViewModel(application: Application) : AndroidViewModel(applica
 
     fun onIntent(intent: Intent) {
         when (intent) {
-            is Intent.ToCheckConditionClick -> {
-                _screenState.value = State(
-                    CheckProductState.SetProductCondition(
-                        id = intent.id,
-                        titleText = application.getString(R.string.what_product_condition_title),
-                        bottomButtonText = application.getString(R.string.next_product_button)
-                    )
-                )
-            }
-
-            is Intent.ToFillProductId -> {
+            is Intent.OnIdUpdated -> {
                 _screenState.value = State(
                     checkProductState = CheckProductState.FillProductId(
-                        id = 0,
+                        id = intent.id,
                         titleText = application.getString(R.string.fill_product_id_to_check),
                         bottomButtonText = application.getString(R.string.next)
                     )
                 )
             }
 
+            is Intent.OnNextButtonClicked -> {
+                when(val state = _screenState.value.checkProductState) {
+                    is CheckProductState.FillProductId -> {
+                        viewModelScope.launch {
+                            try {
+                                checkProductCondition(state.id.toLong())?.let { condition ->
+                                    _screenState.value = State(
+                                        CheckProductState.SetProductCondition(
+                                            id = state.id.toLong(),
+                                            checkedProductCondition = condition,
+                                            titleText = application.getString(R.string.what_product_condition_title),
+                                            bottomButtonText = application.getString(R.string.next_product_button)
+                                        )
+                                    )
+                                } ?: run {
+                                    _event.emit(Event.Error("Ошибка получения товара с указанным id. Возможно, такого товара не существует"))
+                                }
+                            } catch (e: Exception) {
+                                _event.emit(Event.Error("Ошибка: cause: ${e.cause}, errorMessage=${e.message} "))
+                            }
+                        }
+                    }
+                    is CheckProductState.SetProductCondition -> {
+                        viewModelScope.launch {
+                            _screenState.value = State(
+                                CheckProductState.FillProductId(
+                                    id = "",
+                                    titleText = application.getString(R.string.fill_product_id_to_check),
+                                    bottomButtonText = application.getString(R.string.next)
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+
             is Intent.OnLogoutClick -> {
                 viewModelScope.launch {
                     authRepository.logout()
-                    _navigationEvent.emit(NavigationEvent.NavigateToScreen(AUTH_PHONE_SCREEN))
+                    _event.emit(Event.NavigateToScreen(AUTH_PHONE_SCREEN))
                 }
             }
 
             is Intent.OnConditionSelected -> {
-                updateProductCondition(intent.id, intent.productCondition)
+                viewModelScope.launch {
+                    updateProductCondition(intent.id, intent.productCondition)
+                }
             }
         }
-
     }
 
-    private fun updateProductCondition(id: Long, productCondition: Product.ProductCondition) {
-        // обновляем на сервере состояние выбранного товара
+    /**
+     * Проверяем существование товара с таким id и заодно получаем его состояние
+     */
+    private suspend fun checkProductCondition(productId: Long): Product.ProductCondition? {
+        val product = rentPointRepository.searchProducts(
+            listOf(productId), rentPointId = null
+        ).firstOrNull()
+        return product?.condition
+    }
+
+    private suspend fun updateProductCondition(id: Long, productCondition: Product.ProductCondition) {
+        rentPointRepository.updateCondition(productId = id, condition = productCondition)
+        _screenState.value = _screenState.value.copy(
+            checkProductState = (_screenState.value.checkProductState as CheckProductState.SetProductCondition).copy(
+                id = id,
+                checkedProductCondition = productCondition
+            )
+        )
     }
 
     data class State(
@@ -79,8 +126,8 @@ class CheckProductViewModel(application: Application) : AndroidViewModel(applica
     )
 
     sealed interface Intent {
-        object ToFillProductId : Intent
-        data class ToCheckConditionClick(val id: Long) : Intent
+        data class OnIdUpdated(val id: String): Intent
+        object OnNextButtonClicked: Intent
         object OnLogoutClick : Intent
 
         data class OnConditionSelected(
@@ -95,7 +142,7 @@ class CheckProductViewModel(application: Application) : AndroidViewModel(applica
         open val bottomButtonText: String
     ) {
         data class FillProductId(
-            val id: Long,
+            val id: String,
             override val titleText: String,
             override val bottomButtonText: String
         ) : CheckProductState(
@@ -105,16 +152,18 @@ class CheckProductViewModel(application: Application) : AndroidViewModel(applica
 
         data class SetProductCondition(
             val id: Long,
+            val checkedProductCondition: Product.ProductCondition,
             override val titleText: String,
-            override val bottomButtonText: String
+            override val bottomButtonText: String,
         ) : CheckProductState(
             titleText = titleText,
             bottomButtonText = bottomButtonText
         )
     }
 
-    sealed class NavigationEvent {
-        data class NavigateToScreen(val route: String) : NavigationEvent()
-        object NavigateBack : NavigationEvent()
+    sealed class Event {
+        data class NavigateToScreen(val route: String) : Event()
+        object NavigateBack : Event()
+        data class Error(val message: String) : Event()
     }
 }

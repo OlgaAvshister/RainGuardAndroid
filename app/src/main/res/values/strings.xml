@@ -51,6 +51,7 @@
     <!-- Заполнение инвентарных номеров -->
     <string name="fill_ids">Введите номера товаров</string>
     <string name="product_id_label">Товар №%s</string>
+    <string name="product_id_label_single">Товар</string>
 
 
     <!-- Корзина -->

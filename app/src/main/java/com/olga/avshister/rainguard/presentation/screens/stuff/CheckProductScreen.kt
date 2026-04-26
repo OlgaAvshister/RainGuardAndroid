@@ -1,5 +1,6 @@
 package com.olga.avshister.rainguard.presentation.screens.stuff
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,13 +25,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -52,19 +50,12 @@ import com.olga.avshister.rainguard.presentation.viewmodel.stuff.CheckProductVie
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CheckProductScreen(navController: NavHostController) {
+    val context = LocalContext.current
     val viewModel: CheckProductViewModel = viewModel()
-
     val currentScreenState  = viewModel.screenState.collectAsState()
 
     val onClickNext: () -> Unit = {
-        when (val state = currentScreenState.value.checkProductState) {
-            is CheckProductState.FillProductId -> {
-                viewModel.onIntent(Intent.ToCheckConditionClick(state.id))
-            }
-            is CheckProductState.SetProductCondition -> {
-                viewModel.onIntent(Intent.ToFillProductId)
-            }
-        }
+        viewModel.onIntent(Intent.OnNextButtonClicked)
     }
 
     val onClickLogout: () -> Unit = {
@@ -72,16 +63,19 @@ fun CheckProductScreen(navController: NavHostController) {
     }
 
     LaunchedEffect(Unit) {
-        viewModel.navigationEvent.collect { event ->
+        viewModel.event.collect { event ->
             when (event) {
-                is CheckProductViewModel.NavigationEvent.NavigateToScreen -> {
+                is CheckProductViewModel.Event.NavigateToScreen -> {
                     navController.navigate(event.route) {
                         popUpTo(0) { inclusive = true }
                         launchSingleTop = true
                     }
                 }
-                CheckProductViewModel.NavigationEvent.NavigateBack -> {
+                CheckProductViewModel.Event.NavigateBack -> {
                     navController.popBackStack()
+                }
+                is CheckProductViewModel.Event.Error -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -127,12 +121,18 @@ fun CheckProductScreen(navController: NavHostController) {
     ) { paddingValues ->
         when (val state = currentScreenState.value.checkProductState) {
             is CheckProductState.FillProductId -> {
-                FillIdContent(paddingValues)
+                FillIdContent(
+                    pd = paddingValues,
+                    state = state,
+                    onIdFilled = {
+                        viewModel.onIntent(Intent.OnIdUpdated(it))
+                    }
+                )
             }
 
             is CheckProductState.SetProductCondition -> {
-                CheckProductCondition(paddingValues) { condition ->
-                    viewModel.onIntent(Intent.OnConditionSelected(id = state.id, condition))
+                CheckProductCondition(paddingValues, state.checkedProductCondition) { checkedCondition ->
+                    viewModel.onIntent(Intent.OnConditionSelected(id = state.id, checkedCondition))
                 }
             }
         }
@@ -140,9 +140,7 @@ fun CheckProductScreen(navController: NavHostController) {
 }
 
 @Composable
-fun FillIdContent(pd: PaddingValues) {
-    var currentId by remember { mutableStateOf("") }
-
+fun FillIdContent(pd: PaddingValues, state: CheckProductState.FillProductId, onIdFilled: (id: String) -> Unit) {
     Column(
         modifier =
             Modifier
@@ -153,16 +151,16 @@ fun FillIdContent(pd: PaddingValues) {
         Spacer(modifier = Modifier.height(108.dp))
 
         Text(
-            text = "Товар",
+            text = stringResource(R.string.product_id_label_single),
             fontSize = 16.sp
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
-            value = currentId,
+            value = state.id,
             onValueChange = { newValue ->
-                currentId = newValue
+                onIdFilled(newValue)
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -185,7 +183,11 @@ fun FillIdContent(pd: PaddingValues) {
 }
 
 @Composable
-fun CheckProductCondition(paddingValues: PaddingValues, onClick: (condition: Product.ProductCondition) -> Unit) {
+fun CheckProductCondition(
+    paddingValues: PaddingValues,
+    currentCondition: Product.ProductCondition,
+    onClick: (condition: Product.ProductCondition) -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -203,7 +205,10 @@ fun CheckProductCondition(paddingValues: PaddingValues, onClick: (condition: Pro
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    SecondaryButton(text = value.valueStuff) {
+                    SecondaryButton(
+                        text = value.valueStuff,
+                        isChecked = value == currentCondition
+                    ) {
                         onClick(value)
                     }
                     Spacer(modifier = Modifier.height(8.dp))

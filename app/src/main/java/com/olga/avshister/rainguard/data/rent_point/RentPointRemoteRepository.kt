@@ -9,7 +9,7 @@ import com.olga.avshister.rainguard.data.network.NetworkClient
 import com.olga.avshister.rainguard.data.network.owner.RegisterProductRequest
 import com.olga.avshister.rainguard.data.network.rent.RentNet.Companion.toDomain
 import com.olga.avshister.rainguard.data.network.rentPoint.RentPointNet.Companion.toDomain
-import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository.matchesFilter
+import com.olga.avshister.rainguard.data.network.stuff.UpdateConditionRequest
 import com.olga.avshister.rainguard.domain.filter.Filter
 import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.domain.products.Product.Companion.toNet
@@ -59,7 +59,7 @@ class RentPointRemoteRepository(val context: Context): RentPointRepository {
             .find { it.id == rentPointId }
             ?.availableProducts
             ?.filter {
-                matchesFilter(product= it, filter = filter)
+                matchesFilter(product = it, filter = filter)
             } ?: emptyList()
     }
 
@@ -77,14 +77,23 @@ class RentPointRemoteRepository(val context: Context): RentPointRepository {
             } ?: emptyList()
     }
 
-    override suspend fun searchProducts(ids: List<Long>, rentPointId: Long): List<Product> {
-        val rentPoint = apiService.getRentPoints().toDomain().find { it.id == rentPointId }
-        val availableProducts = rentPoint?.availableProducts
-        val foundProducts = availableProducts?.filter { product ->
-            ids.contains(product.id)
+    override suspend fun searchProducts(ids: List<Long>, rentPointId: Long?): List<Product> {
+        val rentPoints = apiService.getRentPoints().toDomain()
+        val allProducts = rentPoints.flatMap { i ->
+            i.availableProducts
         }
 
-        return foundProducts ?: emptyList()
+        val foundProducts = allProducts.filter { product ->
+            ids.contains(product.id)
+        }.let {
+            if (rentPointId == null) {
+                it
+            } else {
+                it.filter { it.id == rentPointId }
+            }
+        }
+
+        return foundProducts
     }
 
     override suspend fun deleteRentPoint(rentPointId: Long) {
@@ -110,4 +119,40 @@ class RentPointRemoteRepository(val context: Context): RentPointRepository {
     override suspend fun getCompletedRents(rentPointId: Long): List<Rent> {
         return apiService.getCompletedRents(rentPointId).map { it.toDomain() }
     }
+
+    override suspend fun updateCondition(
+        productId: Long,
+        condition: Product.ProductCondition
+    ) {
+        apiService.updateCondition(UpdateConditionRequest(productId, condition))
+    }
+
+    /**
+     * Если хоть по одному параметру нет совпадения, считаем что товар не соответствует фильтру
+     * Если какой-то параметр в фильтре не указан - то считаем, что товар соответствует фильтру
+     * и нужно проверить остальные параметры
+     */
+    fun matchesFilter(product: Product, filter: Filter?): Boolean {
+        // если фильтр не задан, то товар автоматически соответствует фильтру
+        if (filter == null)
+            return true
+
+        if (filter.productType != null && filter.productType != product.productType) {
+            return false
+        }
+        if (filter.formFactor != null && filter.formFactor != product.formFactor) {
+            return false
+        }
+        if (filter.printType != null && filter.printType != product.printType) {
+            return false
+        }
+        if (filter.size != null && filter.size != product.size) {
+            return false
+        }
+        if (filter.color != null && filter.color != product.color) {
+            return false
+        }
+        return true
+    }
+
 }

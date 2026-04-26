@@ -10,11 +10,13 @@ import com.olga.avshister.rainguard.data.network.profile.ProfileNet
 import com.olga.avshister.rainguard.data.network.rent.ActiveRentResponse
 import com.olga.avshister.rainguard.data.network.rent.RentNet
 import com.olga.avshister.rainguard.data.network.rentPoint.RentPointNet
+import com.olga.avshister.rainguard.data.network.stuff.UpdateConditionRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Query
 
 interface ApiService {
@@ -57,4 +59,7 @@ interface ApiService {
 
     @DELETE("deleteRentPoint")
     suspend fun deleteRentPoint(@Query("rentPointId") rentPointId: Long)
+
+    @PUT("condition")
+    suspend fun updateCondition(@Body request: UpdateConditionRequest)
 }

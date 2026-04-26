@@ -4,7 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.olga.avshister.rainguard.data.rent_point.RentPointLocalRepository
+import com.olga.avshister.rainguard.data.rent_point.RentPointRemoteRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointRepository
 import com.olga.avshister.rainguard.domain.rent.RentPoint
 import com.yandex.mapkit.geometry.BoundingBox
@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 class AddRentPointViewModel(application: Application): AndroidViewModel(application) {
-    private val rentPointRepository: RentPointRepository = RentPointLocalRepository
+    private val rentPointRepository: RentPointRepository = RentPointRemoteRepository(application)
     private val _inputState = MutableStateFlow(InputRentPointParamState())
 
     val inputState: StateFlow<InputRentPointParamState> = _inputState.asStateFlow()

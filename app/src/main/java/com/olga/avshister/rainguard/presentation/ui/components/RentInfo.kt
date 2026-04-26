@@ -32,7 +32,6 @@ import androidx.compose.ui.unit.sp
 import com.olga.avshister.rainguard.R
 import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.presentation.state.rent.RentState
-import com.olga.avshister.rainguard.presentation.ui.utils.Dataset
 
 @Composable
 fun RentInfo(
@@ -173,20 +172,5 @@ private fun RentInfoCard(
                 )
             }
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun RentInfoPreview() {
-    MaterialTheme {
-        RentInfo(
-            state = RentState(
-                items = Dataset.generateProductsDataset().take(5),
-                rentTime = "02:04:38",
-                cost = 1050,
-                isLoading = false,
-                )
-            )
     }
 }

@@ -19,7 +19,7 @@ interface RentPointRepository {
     suspend fun searchProducts(filter: Filter?, rentPointId: Long): List<Product>
     suspend fun searchProducts(article: Long, rentPointId: Long): List<Product>
 
-    suspend fun searchProducts(ids: List<Long>, rentPointId: Long): List<Product>
+    suspend fun searchProducts(ids: List<Long>, rentPointId: Long?): List<Product>
 
     suspend fun deleteRentPoint(rentPointId: Long)
 
@@ -33,4 +33,5 @@ interface RentPointRepository {
 
     suspend fun addProduct(rentPointId: Long, product: Product)
     suspend fun getCompletedRents(rentPointId: Long): List<Rent>
+    suspend fun updateCondition(productId: Long, condition: Product.ProductCondition)
 }
