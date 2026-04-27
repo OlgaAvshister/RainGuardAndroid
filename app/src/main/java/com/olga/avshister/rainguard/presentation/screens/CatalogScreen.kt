@@ -1,5 +1,6 @@
 package com.olga.avshister.rainguard.presentation.screens
 
+import android.service.notification.Condition
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -65,7 +66,6 @@ fun CatalogScreen(
 
     Log.d("CatalogScreen", "filter=$filter, rentPointId=$rentPointId")
 
-    //val rentPointRepository: RentPointRepository = RentPointLocalRepository
     val rentPointRepository: RentPointRepository = RentPointRemoteRepository(LocalContext.current)
 
     var selectedArticles by remember {
@@ -81,7 +81,10 @@ fun CatalogScreen(
     }
 
     LaunchedEffect(Unit) {
-        products = rentPointRepository.searchProducts(filter, rentPointId).apply {
+        products = rentPointRepository
+            .searchProducts(filter, rentPointId)
+            .filter { it.condition == Product.ProductCondition.READY }
+            .apply {
             productGroups = this.toSetByArticle()
         }
     }

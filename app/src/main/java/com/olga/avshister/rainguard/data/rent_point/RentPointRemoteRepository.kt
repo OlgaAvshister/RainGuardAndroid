@@ -79,18 +79,18 @@ class RentPointRemoteRepository(val context: Context): RentPointRepository {
 
     override suspend fun searchProducts(ids: List<Long>, rentPointId: Long?): List<Product> {
         val rentPoints = apiService.getRentPoints().toDomain()
-        val allProducts = rentPoints.flatMap { i ->
-            i.availableProducts
+        val allProducts = if (rentPointId == null) {
+            rentPoints.flatMap { i ->
+                i.availableProducts
+            }
+        }  else {
+            rentPoints
+                .find { it.id == rentPointId }
+                ?.availableProducts.orEmpty()
         }
 
         val foundProducts = allProducts.filter { product ->
             ids.contains(product.id)
-        }.let {
-            if (rentPointId == null) {
-                it
-            } else {
-                it.filter { it.id == rentPointId }
-            }
         }
 
         return foundProducts

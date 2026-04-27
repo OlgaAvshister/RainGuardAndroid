@@ -145,16 +145,19 @@ class OwnerRentPointViewModel(application: Application): AndroidViewModel(applic
             try {
                 val rentPointProducts = rentPointRepository.searchProducts(filter = null, rentPointId = rentPointId)
 
-                // Рассчитываем статусы (примерная логика)
                 val status = ProductsStatus(
                     ready = rentPointProducts.filter { it.condition == Product.ProductCondition.READY }.size,
                     dirty = rentPointProducts.filter { it.condition == Product.ProductCondition.DIRTY }.size,
                     broken = rentPointProducts.filter { it.condition == Product.ProductCondition.BROKEN }.size
                 )
-
                 _uiState.update { it.copy(productsStatus = status) }
             } catch (e: Exception) {
-                // Обработка ошибки
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        error = "Ошибка получения статуса товаров: ${e.message}"
+                    )
+                }
             }
         }
     }

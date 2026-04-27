@@ -47,6 +47,7 @@ data class Product(
         DIRTY(valueStuff = "Нужна стирка", valueOwner = "Грязные"),
         BROKEN(valueStuff = "Нужно заменить", valueOwner = "Неисправные"),
         BOUGHT(valueStuff = "Выкуплен", valueOwner = "Выкуплен"),
+        BOOKED(valueStuff = "Арендован", valueOwner = "Арендован")
     }
 
 
