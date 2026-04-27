@@ -47,15 +47,11 @@ class AddRentPointViewModel(application: Application): AndroidViewModel(applicat
                             viewModelScope.launch {
                                 _inputState.value = _inputState.value.copy(isLoading = false)
                                 rentPointRepository.registerRentPoint(
-                                    RentPoint(
-                                        id = Random.nextLong(),
-                                        address = fullAddress,
-                                        name = _inputState.value.name,
-                                        latitude = point.latitude,
-                                        longitude = point.longitude,
-                                        workHours = _inputState.value.workHours,
-                                        availableProducts = listOf()
-                                    )
+                                    name = _inputState.value.name,
+                                    fullAddress = fullAddress,
+                                    latitude = point.latitude,
+                                    longitude = point.longitude,
+                                    workHours = _inputState.value.workHours,
                                 )
                                 _events.emit(Event.Close)
                             }

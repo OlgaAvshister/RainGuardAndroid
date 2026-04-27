@@ -7,6 +7,7 @@ import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl.Companion.KE
 import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl.Companion.KEY_START_RENT_POINT_ID
 import com.olga.avshister.rainguard.data.network.NetworkClient
 import com.olga.avshister.rainguard.data.network.owner.RegisterProductRequest
+import com.olga.avshister.rainguard.data.network.owner.RegisterRentPointRequest
 import com.olga.avshister.rainguard.data.network.rent.RentNet.Companion.toDomain
 import com.olga.avshister.rainguard.data.network.rentPoint.RentPointNet.Companion.toDomain
 import com.olga.avshister.rainguard.data.network.stuff.UpdateConditionRequest
@@ -40,8 +41,21 @@ class RentPointRemoteRepository(val context: Context): RentPointRepository {
         return prefs.getLong(KEY_FINISH_RENT_POINT_ID, -1)
     }
 
-    override suspend fun registerRentPoint(rentPoint: RentPoint) {
-        TODO("Not yet implemented")
+    override suspend fun registerRentPoint(
+        name: String,
+        fullAddress: String,
+        latitude: Double,
+        longitude: Double,
+        workHours: String
+    ) {
+        val request = RegisterRentPointRequest(
+            name = name,
+            fullAddress = fullAddress,
+            latitude = latitude,
+            longitude = longitude,
+            workHours = workHours
+        )
+        apiService.registerRentPoint(request)
     }
 
     override suspend fun getRentPoints(): List<RentPoint> {

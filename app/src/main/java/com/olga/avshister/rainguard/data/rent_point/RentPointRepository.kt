@@ -12,7 +12,13 @@ interface RentPointRepository {
     suspend fun setFinishRentPointId(id: Long)
     suspend fun getFinishRentPointId(): Long
 
-    suspend fun registerRentPoint(rentPoint: RentPoint)
+    suspend fun registerRentPoint(
+        name: String,
+        fullAddress: String,
+        latitude: Double,
+        longitude: Double,
+        workHours: String
+    )
     suspend fun getRentPoints(): List<RentPoint>
     suspend fun getRentPointById(id: Long): RentPoint?
 

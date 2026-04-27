@@ -4,6 +4,7 @@ import com.olga.avshister.rainguard.data.network.auth.AuthRequest
 import com.olga.avshister.rainguard.data.network.auth.AuthResponse
 import com.olga.avshister.rainguard.data.network.card.CardContract
 import com.olga.avshister.rainguard.data.network.owner.RegisterProductRequest
+import com.olga.avshister.rainguard.data.network.owner.RegisterRentPointRequest
 import com.olga.avshister.rainguard.data.network.owner.RegisterStuffRequest
 import com.olga.avshister.rainguard.data.network.product.ProductNet
 import com.olga.avshister.rainguard.data.network.profile.ProfileNet
@@ -56,6 +57,9 @@ interface ApiService {
 
     @POST("registerProduct")
     suspend fun registerProduct(@Body request: RegisterProductRequest)
+
+    @POST("registerRentPoint")
+    suspend fun registerRentPoint(@Body request: RegisterRentPointRequest)
 
     @DELETE("deleteRentPoint")
     suspend fun deleteRentPoint(@Query("rentPointId") rentPointId: Long)
