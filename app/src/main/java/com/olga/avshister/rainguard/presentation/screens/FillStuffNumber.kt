@@ -41,6 +41,7 @@ import com.olga.avshister.rainguard.presentation.ui.components.PrimaryButton
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FillStuffNumber(
+    onBack: () -> Unit,
     onNextState: (state: BSheetContentState) -> Unit,
 ) {
     var number by remember { mutableStateOf("") }
@@ -59,7 +60,7 @@ fun FillStuffNumber(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = {/* navController.popBackStack() */}) {
+                    IconButton(onClick = { onBack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }

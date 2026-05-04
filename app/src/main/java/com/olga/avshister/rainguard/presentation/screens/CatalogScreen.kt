@@ -60,6 +60,7 @@ import com.olga.avshister.rainguard.presentation.ui.components.PrimaryButton
 fun CatalogScreen(
     filter: ConcatFilter,
     rentPointId: Long,
+    onBack: () -> Unit,
     onNextState: (state: BSheetContentState) -> Unit,
     ) {
 
@@ -105,7 +106,11 @@ fun CatalogScreen(
                 )
             },
             navigationIcon = {
-                IconButton(onClick = { /*navController.popBackStack()*/ }) {
+                IconButton(
+                    onClick = {
+                        onBack()
+                    }
+                ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.back)
@@ -224,6 +229,7 @@ fun CatalogScreenPreview() {
                 raincoatFilter = null,
             ),
             rentPointId = 1,
+            onBack = {},
             onNextState = {})
     }
 }

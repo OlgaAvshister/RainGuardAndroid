@@ -51,6 +51,7 @@ import com.olga.avshister.rainguard.presentation.viewmodel.SelectIdsViewModel
 fun SelectIdsScreen(
     openToTake: Boolean, // открываем экран для аренды/возврата
     rentPointId: Long,
+    onBack: () -> Unit,
     onNextState: (state: BSheetContentState) -> Unit,
 ) {
     val context = LocalContext.current
@@ -103,7 +104,7 @@ fun SelectIdsScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = {/* navController.popBackStack() */}) {
+                    IconButton(onClick = { onBack() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = stringResource(R.string.back))
                     }
                 }
@@ -119,12 +120,9 @@ fun SelectIdsScreen(
                 Button(
                     onClick = {
                         if (openToTake) {
-                            // todo: вот здесь может проблема с асинхронностью возникнуть, нужно вернуться
                             viewModel.onIntent(SelectIdsViewModel.Intent.ToCheckout)
-                            //onNextState(BSheetContentState.CheckoutState)
                         } else {
                             viewModel.onIntent(SelectIdsViewModel.Intent.GiveToCheck)
-                            //onNextState(BSheetContentState.GiveToCheckState)
                         }
                     },
                     shape = RoundedCornerShape(28.dp),
@@ -190,5 +188,5 @@ fun SelectIdsScreen(
 @Preview(showBackground = true)
 @Composable
 fun SelectIdsScreenPreview() {
-    SelectIdsScreen(openToTake = true, rentPointId = 1, onNextState = {})
+    SelectIdsScreen(openToTake = true, rentPointId = 1, onBack = {}, onNextState = {})
 }

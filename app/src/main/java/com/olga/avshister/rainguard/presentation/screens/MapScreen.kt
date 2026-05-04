@@ -1,12 +1,8 @@
 package com.olga.avshister.rainguard.presentation.screens
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,7 +41,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -55,6 +50,11 @@ import com.olga.avshister.rainguard.domain.profile.Role
 import com.olga.avshister.rainguard.domain.rent.RentPoint
 import com.olga.avshister.rainguard.presentation.core.ADD_RENT_POINT_SCREEN
 import com.olga.avshister.rainguard.presentation.core.PROFILE_SCREEN
+import com.olga.avshister.rainguard.presentation.screens.MapScreen.INIT_AZIMUTH
+import com.olga.avshister.rainguard.presentation.screens.MapScreen.INIT_LATITUDE
+import com.olga.avshister.rainguard.presentation.screens.MapScreen.INIT_LONGITUDE
+import com.olga.avshister.rainguard.presentation.screens.MapScreen.INIT_TILT
+import com.olga.avshister.rainguard.presentation.screens.MapScreen.INIT_ZOOM
 import com.olga.avshister.rainguard.presentation.screens.owner.OwnerRentPointScreen
 import com.olga.avshister.rainguard.presentation.state.BSheetContentState
 import com.olga.avshister.rainguard.presentation.state.MapMainContentState
@@ -109,7 +109,6 @@ fun MapScreen(navController: NavHostController) {
             }
         }
     }
-
 
     // Обработка системной кнопки "Назад"
     BackHandler(
@@ -190,6 +189,7 @@ fun MapScreen(navController: NavHostController) {
                             CatalogScreen(
                                 it.filter,
                                 it.rentPointId,
+                                onBack = { navigateBack() },
                                 onNextState = { state ->
                                     navigateTo(state)
                                 }
@@ -202,6 +202,7 @@ fun MapScreen(navController: NavHostController) {
                             CartScreen(
                                 it.selectedArticles,
                                 it.rentPointId,
+                                onBack = { navigateBack() },
                                 onNextState = { state ->
                                     navigateTo(state)
                                 }
@@ -213,6 +214,7 @@ fun MapScreen(navController: NavHostController) {
                         SelectIdsScreen(
                             openToTake = true,
                             rentPointId = (currentBSheetContentState as BSheetContentState.SelectIdsStateToTakeState).rentPointId,
+                            onBack = { navigateBack() },
                             onNextState = { state ->
                                 navigateTo(state)
                             }
@@ -239,6 +241,7 @@ fun MapScreen(navController: NavHostController) {
                         SelectIdsScreen(
                             openToTake = false,
                             rentPointId = (currentBSheetContentState as BSheetContentState.SelectIdsStateToDropState).rentPointId,
+                            onBack = { navigateBack() },
                             onNextState = { state ->
                                 navigateTo(state)
                             }
@@ -255,6 +258,7 @@ fun MapScreen(navController: NavHostController) {
 
                     is BSheetContentState.FillStuffNumberState -> {
                         FillStuffNumber(
+                            onBack = { navigateBack() },
                             onNextState = { state ->
                                 navigateTo(state)
                             }
@@ -328,9 +332,9 @@ fun MainContent(
     val mapView = remember { mutableStateOf<MapView?>(null) }
     val clusterizedCollection = remember { mutableStateOf<ClusterizedPlacemarkCollection?>(null) }
 
-    val initialPoint = Point(55.752511, 37.621570)
+    val initialPoint = Point(INIT_LATITUDE, INIT_LONGITUDE)
 
-    val placemarkTapListener = MapObjectTapListener { rentPoint, point ->
+    val placemarkTapListener = MapObjectTapListener { rentPoint, _ ->
         val rentPointState = when (mapMainContentState.role) {
             Role.CUSTOMER -> BSheetContentState.RentPointState(rentPoint.userData as RentPoint)
             Role.OWNER -> BSheetContentState.OwnerRentPointState(rentPoint.userData as RentPoint)
@@ -396,40 +400,19 @@ fun MainContent(
             )
         }
 
-        if (mapMainContentState.hasActiveRent) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                contentAlignment = Alignment.TopCenter
-            ) {
-                LabelRounded(
-                    text = stringResource(R.string.map_label_select_return_point)
-                )
-            }
-        }
-
-        // Обработка разрешений
-        val permissionLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestPermission(),
-            onResult = { isGranted ->
-                if (isGranted) {
-                    // Разрешение получено
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentAlignment = Alignment.TopCenter
+        ) {
+            LabelRounded(
+                text = if (mapMainContentState.hasActiveRent) {
+                    stringResource(R.string.map_label_select_return_point)
                 } else {
-                    // TODO: выводить тост, что без разрешения работать не будет
+                    stringResource(R.string.map_label_select_rent_point)
                 }
-            }
-        )
-
-        LaunchedEffect(Unit) {
-            val permission = Manifest.permission.ACCESS_FINE_LOCATION
-            if (ContextCompat.checkSelfPermission(
-                    context,
-                    permission
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                permissionLauncher.launch(permission)
-            }
+            )
         }
 
         // Инициализация карты
@@ -439,9 +422,9 @@ fun MainContent(
                 mapView.mapWindow.map.move(
                     CameraPosition(
                         initialPoint,
-                        12.0f,
-                        0.0f,
-                        30.0f
+                        INIT_ZOOM,
+                        INIT_AZIMUTH,
+                        INIT_TILT
                     )
                 )
 
@@ -545,4 +528,12 @@ enum class BottomBarItem(
     RENT(R.string.rent_tab, R.drawable.ic_bottom_bar_rent),
     HOME(R.string.home_tab, R.drawable.ic_bottom_bar_home),
     PROFILE(R.string.profile_tab, R.drawable.ic_bottom_bar_profile),
+}
+
+object MapScreen {
+    const val INIT_ZOOM = 12.0f
+    const val INIT_AZIMUTH = 0.0f
+    const val INIT_TILT = 30.0f
+    const val INIT_LATITUDE = 55.752511
+    const val INIT_LONGITUDE = 37.621570
 }

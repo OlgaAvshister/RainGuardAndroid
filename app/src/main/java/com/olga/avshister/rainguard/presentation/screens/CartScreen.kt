@@ -58,6 +58,7 @@ import com.olga.avshister.rainguard.presentation.viewmodel.CartViewModel
 fun CartScreen(
     selectedArticles: Set<Long>,
     rentPointId: Long,
+    onBack: () -> Unit,
     onNextState: (state: BSheetContentState) -> Unit,
 ) {
     val context = LocalContext.current
@@ -107,7 +108,7 @@ fun CartScreen(
                 )
             },
             navigationIcon = {
-                IconButton(onClick = { /*navController.popBackStack()*/ }) {
+                IconButton(onClick = { onBack() }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = stringResource(R.string.back)
@@ -143,7 +144,7 @@ fun CartScreen(
                     )
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
-                        onClick = { /*navController.popBackStack()*/ }
+                        onClick = { onBack() }
                     ) {
                         Text(stringResource(R.string.back))
                     }
@@ -179,7 +180,6 @@ fun CartScreen(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             onClick = {
                 onNextState(BSheetContentState.SelectIdsStateToTakeState(rentPointId))
-                /*navController.navigate(SELECT_IDS_SCREEN)*/
             }
         )
     }

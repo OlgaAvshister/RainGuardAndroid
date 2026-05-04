@@ -97,6 +97,7 @@
     <string name="everything_good">Все хорошо</string>
     <string name="you_can_pay_now">Можете оплачивать аренду</string>
     <string name="map_label_select_return_point">Выберите точку возврата</string>
+    <string name="map_label_select_rent_point">Выберите точку аренды</string>
 
     <!-- Проверка товара -->
     <string name="fill_product_id_to_check">Введите номер товара</string>
