@@ -8,11 +8,16 @@ import com.olga.avshister.rainguard.domain.products.Product.ProductType
 import com.olga.avshister.rainguard.domain.products.Product.Size
 import kotlinx.parcelize.Parcelize
 
-@Parcelize
-data class Filter(
-    val productType: ProductType?, // зонт/дождевик
-    val printType: PrintType?, // есть принт/нет принта
-    val color: Colors?,
-    val formFactor: FormFactor?, // FOLDING (складывающийся)/STICK (трость) для зонта; JACKET (куртка)/ FULLBODY_RAINCOAT для дождевика на всё тело
-    val size: Size?, // только для дождевика
-) : Parcelable
+data class ConcatFilter(
+    val umbrellaFilter: Filter?,
+    val raincoatFilter: Filter?
+) {
+    @Parcelize
+    data class Filter(
+        val printType: PrintType? = null, // есть принт/нет принта
+        val color: Colors? = null,
+        val formFactor: FormFactor? = null, // FOLDING (складывающийся)/STICK (трость) для зонта; JACKET (куртка)/ RAINCOAT (для дождевика на всё тело)
+        val size: Size? = null, // только для дождевика
+    ) : Parcelable
+}
+

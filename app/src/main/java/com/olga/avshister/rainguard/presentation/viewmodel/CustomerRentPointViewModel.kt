@@ -5,15 +5,13 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl
-import com.olga.avshister.rainguard.data.common.PrefsRepositoryImpl.Companion.KEY_START_RENT_POINT_ID
 import com.olga.avshister.rainguard.data.profile.AuthRemoteRepository
 import com.olga.avshister.rainguard.data.profile.AuthRepository
 import com.olga.avshister.rainguard.data.rent.RentRepository
 import com.olga.avshister.rainguard.data.rent.RentRepositoryImpl
 import com.olga.avshister.rainguard.data.rent_point.RentPointRemoteRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointRepository
-import com.olga.avshister.rainguard.domain.filter.Filter
+import com.olga.avshister.rainguard.domain.filter.ConcatFilter
 import com.olga.avshister.rainguard.domain.products.Product.*
 import com.olga.avshister.rainguard.domain.profile.Profile
 import com.olga.avshister.rainguard.domain.rent.RentPoint
@@ -29,7 +27,7 @@ import kotlinx.coroutines.launch
 import kotlin.Long
 
 class CustomerRentPointViewModel(
-    private val context: Context,
+    context: Context,
     private val rentPoint: RentPoint,
 ) : ViewModel() {
 
@@ -43,12 +41,9 @@ class CustomerRentPointViewModel(
     private val _customerRentPointState = MutableStateFlow(
         CustomerRentPointState(
             loadingState = true,
-            filterState = Filter(
-                productType = null,
-                printType = null,
-                color = null,
-                formFactor = null,
-                size = null
+            filterState = ConcatFilter(
+                umbrellaFilter = null,
+                raincoatFilter = null,
             ),
             rentState = RentState(isLoading = true)
         )
@@ -58,7 +53,7 @@ class CustomerRentPointViewModel(
 
     data class CustomerRentPointState(
         val loadingState: Boolean,
-        val filterState: Filter,
+        val filterState: ConcatFilter,
         val rentState: RentState
     )
 
@@ -66,9 +61,8 @@ class CustomerRentPointViewModel(
 
     sealed interface Intent {
         object LoadData: Intent
-        data class SelectProductType(val type: ProductType) : Intent
-        data class SelectFormFactor(val formFactor: FormFactor) : Intent
-        data class SelectPrintType(val printType: PrintType) : Intent
+        data class SelectFormFactor(val type: ProductType, val formFactor: FormFactor) : Intent
+        data class SelectPrintType(val type: ProductType, val printType: PrintType) : Intent
         data class SelectSize(val size: Size) : Intent
     }
 
@@ -78,43 +72,65 @@ class CustomerRentPointViewModel(
             is Intent.LoadData -> {
                 loadProfile()
             }
-            is Intent.SelectProductType -> {
-                _customerRentPointState.update {
-                    it.copy(
-                        filterState = it.filterState.copy(
-                            productType = intent.type,
-                            formFactor = null,
-                            size = null
-                        )
-                    )
-                }
-            }
 
             is Intent.SelectFormFactor -> {
-                _customerRentPointState.update {
-                    it.copy(
-                        filterState = it.filterState.copy(
-                            formFactor = intent.formFactor
-                        )
-                    )
+                _customerRentPointState.update { state ->
+                    when (intent.type) {
+                        ProductType.UMBRELLA -> {
+                            state.copy(
+                                filterState = state.filterState.copy(
+                                    umbrellaFilter = state.filterState.umbrellaFilter?.copy(
+                                        formFactor = intent.formFactor
+                                    ) ?: ConcatFilter.Filter(formFactor = intent.formFactor)
+                                )
+                            )
+                        }
+                        ProductType.RAINCOAT -> {
+                            state.copy(
+                                filterState = state.filterState.copy(
+                                    raincoatFilter = state.filterState.raincoatFilter?.copy(
+                                        formFactor = intent.formFactor
+                                    ) ?: ConcatFilter.Filter(formFactor = intent.formFactor)
+                                )
+                            )
+                        }
+                    }
                 }
             }
 
             is Intent.SelectPrintType -> {
-                _customerRentPointState.update {
-                    it.copy(
-                        filterState = it.filterState.copy(
-                            printType = intent.printType
-                        )
-                    )
+                _customerRentPointState.update { state ->
+                    when (intent.type) {
+                        ProductType.UMBRELLA -> {
+                            state.copy(
+                                filterState = state.filterState.copy(
+                                    umbrellaFilter = state.filterState.umbrellaFilter?.copy(
+                                        printType = intent.printType
+                                    ) ?: ConcatFilter.Filter(printType = intent.printType)
+                                )
+                            )
+                        }
+                        ProductType.RAINCOAT -> {
+                            state.copy(
+                                filterState = state.filterState.copy(
+                                    raincoatFilter = state.filterState.raincoatFilter?.copy(
+                                        printType = intent.printType
+                                    ) ?: ConcatFilter.Filter(printType = intent.printType)
+                                )
+                            )
+                        }
+                    }
                 }
             }
 
+            // Размер имеет только дождевик
             is Intent.SelectSize -> {
-                _customerRentPointState.update {
-                    it.copy(
-                        filterState = it.filterState.copy(
-                            size = intent.size
+                _customerRentPointState.update { state ->
+                    state.copy(
+                        filterState = state.filterState.copy(
+                            raincoatFilter = state.filterState.raincoatFilter?.copy(
+                                size = intent.size
+                            ) ?: ConcatFilter.Filter(size = intent.size)
                         )
                     )
                 }

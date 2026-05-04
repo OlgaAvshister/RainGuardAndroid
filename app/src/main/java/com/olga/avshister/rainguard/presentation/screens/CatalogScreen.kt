@@ -1,6 +1,5 @@
 package com.olga.avshister.rainguard.presentation.screens
 
-import android.service.notification.Condition
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -50,7 +49,7 @@ import androidx.compose.ui.unit.sp
 import com.olga.avshister.rainguard.R
 import com.olga.avshister.rainguard.data.rent_point.RentPointRemoteRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointRepository
-import com.olga.avshister.rainguard.domain.filter.Filter
+import com.olga.avshister.rainguard.domain.filter.ConcatFilter
 import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.domain.products.Product.Companion.toSetByArticle
 import com.olga.avshister.rainguard.presentation.state.BSheetContentState
@@ -59,7 +58,7 @@ import com.olga.avshister.rainguard.presentation.ui.components.PrimaryButton
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CatalogScreen(
-    filter: Filter,
+    filter: ConcatFilter,
     rentPointId: Long,
     onNextState: (state: BSheetContentState) -> Unit,
     ) {
@@ -100,17 +99,7 @@ fun CatalogScreen(
         TopAppBar(
             title = {
                 Text(
-                    text = when (filter.productType) {
-                        Product.ProductType.UMBRELLA -> {
-                            stringResource(R.string.catalog_select_umbrellas)
-                        }
-                        Product.ProductType.RAINCOAT -> {
-                            stringResource(R.string.catalog_select_raincoats)
-                        }
-                        else -> {
-                            stringResource(R.string.catalog_select_products)
-                        }
-                    },
+                    text = stringResource(R.string.catalog_select_products),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -230,12 +219,9 @@ data class GroupUiModel(
 fun CatalogScreenPreview() {
     MaterialTheme {
         CatalogScreen(
-            filter = Filter(
-                productType = Product.ProductType.UMBRELLA,
-                printType = Product.PrintType.WITHOUT_PRINT,
-                color = Product.Colors.RED,
-                formFactor = Product.FormFactor.STICK,
-                size = null
+            filter = ConcatFilter(
+                umbrellaFilter = null,
+                raincoatFilter = null,
             ),
             rentPointId = 1,
             onNextState = {})

@@ -7,6 +7,7 @@ import com.olga.avshister.rainguard.data.profile.AuthRemoteRepository
 import com.olga.avshister.rainguard.data.profile.AuthRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointRemoteRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointRepository
+import com.olga.avshister.rainguard.domain.filter.ConcatFilter
 import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.domain.rent.Rent
 import com.olga.avshister.rainguard.domain.rent.RentPoint
@@ -143,7 +144,9 @@ class OwnerRentPointViewModel(application: Application): AndroidViewModel(applic
     private fun loadProductsStatus(rentPointId: Long) {
         viewModelScope.launch {
             try {
-                val rentPointProducts = rentPointRepository.searchProducts(filter = null, rentPointId = rentPointId)
+                val rentPointProducts = rentPointRepository.searchProducts(
+                    filter = ConcatFilter(null, null), rentPointId = rentPointId
+                )
 
                 val status = ProductsStatus(
                     ready = rentPointProducts.filter { it.condition == Product.ProductCondition.READY }.size,

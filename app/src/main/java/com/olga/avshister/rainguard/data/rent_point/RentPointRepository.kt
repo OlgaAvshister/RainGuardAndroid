@@ -1,6 +1,6 @@
 package com.olga.avshister.rainguard.data.rent_point
 
-import com.olga.avshister.rainguard.domain.filter.Filter
+import com.olga.avshister.rainguard.domain.filter.ConcatFilter
 import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.domain.rent.Rent
 import com.olga.avshister.rainguard.domain.rent.RentPoint
@@ -22,7 +22,7 @@ interface RentPointRepository {
     suspend fun getRentPoints(): List<RentPoint>
     suspend fun getRentPointById(id: Long): RentPoint?
 
-    suspend fun searchProducts(filter: Filter?, rentPointId: Long): List<Product>
+    suspend fun searchProducts(filter: ConcatFilter, rentPointId: Long): List<Product>
     suspend fun searchProducts(article: Long, rentPointId: Long): List<Product>
 
     suspend fun searchProducts(ids: List<Long>, rentPointId: Long?): List<Product>

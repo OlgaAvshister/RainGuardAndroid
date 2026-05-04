@@ -11,7 +11,7 @@ import com.olga.avshister.rainguard.data.network.owner.RegisterRentPointRequest
 import com.olga.avshister.rainguard.data.network.rent.RentNet.Companion.toDomain
 import com.olga.avshister.rainguard.data.network.rentPoint.RentPointNet.Companion.toDomain
 import com.olga.avshister.rainguard.data.network.stuff.UpdateConditionRequest
-import com.olga.avshister.rainguard.domain.filter.Filter
+import com.olga.avshister.rainguard.domain.filter.ConcatFilter
 import com.olga.avshister.rainguard.domain.products.Product
 import com.olga.avshister.rainguard.domain.products.Product.Companion.toNet
 import com.olga.avshister.rainguard.domain.rent.Rent
@@ -66,7 +66,7 @@ class RentPointRemoteRepository(val context: Context): RentPointRepository {
         return runCatching { apiService.getRentPoints().toDomain().first { it.id == id } }.getOrNull()
     }
 
-    override suspend fun searchProducts(filter: Filter?, rentPointId: Long): List<Product> {
+    override suspend fun searchProducts(filter: ConcatFilter, rentPointId: Long): List<Product> {
         return apiService
             .getRentPoints()
             .toDomain()
@@ -146,27 +146,44 @@ class RentPointRemoteRepository(val context: Context): RentPointRepository {
      * Если какой-то параметр в фильтре не указан - то считаем, что товар соответствует фильтру
      * и нужно проверить остальные параметры
      */
-    fun matchesFilter(product: Product, filter: Filter?): Boolean {
-        // если фильтр не задан, то товар автоматически соответствует фильтру
-        if (filter == null)
+    fun matchesFilter(product: Product, filter: ConcatFilter): Boolean {
+        // если совсем ничего не выбрано, то считаем что пользователь хочет увидеть все товары
+        if (filter.umbrellaFilter == null && filter.raincoatFilter == null)
             return true
 
-        if (filter.productType != null && filter.productType != product.productType) {
-            return false
-        }
-        if (filter.formFactor != null && filter.formFactor != product.formFactor) {
-            return false
-        }
-        if (filter.printType != null && filter.printType != product.printType) {
-            return false
-        }
-        if (filter.size != null && filter.size != product.size) {
-            return false
-        }
-        if (filter.color != null && filter.color != product.color) {
-            return false
-        }
-        return true
-    }
+        when (product.productType) {
+            Product.ProductType.UMBRELLA -> {
+                // если фильтр для зонта не заполнен, сразу считаем что не соответствует фильтру
+                val filter = filter.umbrellaFilter ?: return false
 
+                if (filter.formFactor != null && filter.formFactor != product.formFactor) {
+                    return false
+                }
+                if (filter.printType != null && filter.printType != product.printType) {
+                    return false
+                }
+                if (filter.color != null && filter.color != product.color) {
+                    return false
+                }
+                return true
+            }
+            Product.ProductType.RAINCOAT -> {
+                val filter = filter.raincoatFilter ?: return false
+
+                if (filter.formFactor != null && filter.formFactor != product.formFactor) {
+                    return false
+                }
+                if (filter.printType != null && filter.printType != product.printType) {
+                    return false
+                }
+                if (filter.size != null && filter.size != product.size) {
+                    return false
+                }
+                if (filter.color != null && filter.color != product.color) {
+                    return false
+                }
+                return true
+            }
+        }
+    }
 }

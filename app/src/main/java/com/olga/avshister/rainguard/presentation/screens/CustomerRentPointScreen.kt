@@ -145,7 +145,7 @@ private fun FiltersBSheetContent(
         HeaderRentPoint(
             title = rentPoint.name,
             address = rentPoint.address,
-            openingHours = stringResource(R.string.work_schedule)
+            openingHours = rentPoint.workHours
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -156,15 +156,6 @@ private fun FiltersBSheetContent(
                 Tab(
                     selected = pagerState.currentPage == index,
                     onClick = {
-                        onIntent(
-                            Intent.SelectProductType(
-                                if (index == TAB_UMBRELLA) {
-                                    Product.ProductType.UMBRELLA
-                                } else {
-                                    Product.ProductType.RAINCOAT
-                                }
-                            )
-                        )
                         scope.launch {
                             pagerState.scrollToPage(index)
                         }
@@ -220,7 +211,7 @@ private fun ActiveRentBSheetContent(
         HeaderRentPoint(
             title = rentPoint.name,
             address = rentPoint.address,
-            openingHours = stringResource(R.string.work_schedule)
+            openingHours = rentPoint.workHours
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -254,9 +245,11 @@ fun UmbrellaContent(
                 stringResource(R.string.filter_type_select_folding) to Product.FormFactor.FOLDING,
                 stringResource(R.string.filter_type_select_stick) to Product.FormFactor.STICK
             ),
-            selected = state.filterState.formFactor,
+            selected = state.filterState.umbrellaFilter?.formFactor,
             onSelected = {
-                onIntent(Intent.SelectFormFactor(it))
+                onIntent(
+                    Intent.SelectFormFactor(type = Product.ProductType.UMBRELLA, it)
+                )
             }
         )
 
@@ -266,9 +259,9 @@ fun UmbrellaContent(
                 stringResource(R.string.filter_print_select_yes) to Product.PrintType.WITH_PRINT,
                 stringResource(R.string.filter_print_select_no) to Product.PrintType.WITHOUT_PRINT
             ),
-            selected = state.filterState.printType,
+            selected = state.filterState.umbrellaFilter?.printType,
             onSelected = {
-                onIntent(Intent.SelectPrintType(it))
+                onIntent(Intent.SelectPrintType(type = Product.ProductType.UMBRELLA, it))
             }
         )
     }
@@ -291,9 +284,9 @@ fun RaincoatContent(
                 stringResource(R.string.filter_type_select_jacket) to Product.FormFactor.JACKET,
                 stringResource(R.string.filter_type_select_raincoat) to Product.FormFactor.RAINCOAT
             ),
-            selected = state.filterState.formFactor,
+            selected = state.filterState.raincoatFilter?.formFactor,
             onSelected = {
-                onIntent(Intent.SelectFormFactor(it))
+                onIntent(Intent.SelectFormFactor(type = Product.ProductType.RAINCOAT, it))
             }
         )
 
@@ -303,9 +296,9 @@ fun RaincoatContent(
                 stringResource(R.string.filter_print_select_yes) to Product.PrintType.WITH_PRINT,
                 stringResource(R.string.filter_print_select_no) to Product.PrintType.WITHOUT_PRINT
             ),
-            selected = state.filterState.printType,
+            selected = state.filterState.raincoatFilter?.printType,
             onSelected = {
-                onIntent(Intent.SelectPrintType(it))
+                onIntent(Intent.SelectPrintType(Product.ProductType.RAINCOAT,it))
             }
         )
 
@@ -318,7 +311,7 @@ fun RaincoatContent(
                 Product.Size.L.value to Product.Size.L,
                 Product.Size.XL.value to Product.Size.XL
             ),
-            selected = state.filterState.size,
+            selected = state.filterState.raincoatFilter?.size,
             onSelected = {
                 onIntent(Intent.SelectSize(it))
             }
