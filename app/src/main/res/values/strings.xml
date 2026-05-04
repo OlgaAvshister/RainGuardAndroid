@@ -116,6 +116,13 @@
     <string name="add_rent_point_address">Адрес</string>
     <string name="add_rent_work_hours">Время работы</string>
 
+    <!-- Создание нового товара -->
+    <string name="add_product">Добавить товар</string>
+    <string name="add_product_product_type">Вид</string>
+    <string name="add_product_form_factor">Тип</string>
+    <string name="add_product_color">Цвет</string>
+    <string name="add_product_print">Принт</string>
+
     <!-- Точка аренды/возврата для владельца -->
     <string name="owner_add_stuff_label">Добавить сотрудника</string>
     <string name="owner_add_stuff_name">Имя</string>

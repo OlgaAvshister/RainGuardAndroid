@@ -101,6 +101,7 @@ data class Product(
     }
 
     companion object {
+        const val DEFAULT_PRODUCT_ID = -1L
         /**
          * Extension-функция для генерации артикула
          *
