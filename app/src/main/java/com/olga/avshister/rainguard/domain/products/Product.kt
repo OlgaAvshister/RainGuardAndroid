@@ -35,7 +35,7 @@ data class Product(
     }
 
     enum class Size(val value: String) {
-        XS ("XS"), S ("S"), M ("M"), L (""), XL ("XL")
+        XS ("XS"), S ("S"), M ("M"), L ("L"), XL ("XL")
     }
 
     /**
