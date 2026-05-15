@@ -123,7 +123,6 @@ class SelectIdsViewModel(context: Context, val openToTake: Boolean, val rentPoin
                     _action.emit(Action.OnNextState(BSheetContentState.CheckoutState))
                 }
                 is Intent.GiveToCheck -> {
-                    // todo: запомнить и затем перейти на след экран
                     _action.emit(Action.OnNextState(BSheetContentState.GiveToCheckState))
                 }
             }

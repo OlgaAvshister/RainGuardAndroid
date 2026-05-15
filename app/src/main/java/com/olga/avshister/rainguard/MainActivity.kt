@@ -17,7 +17,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
 import com.olga.avshister.rainguard.data.profile.AuthRemoteRepository
 import com.olga.avshister.rainguard.domain.profile.Role
 import com.olga.avshister.rainguard.presentation.core.ADD_RENT_POINT_SCREEN

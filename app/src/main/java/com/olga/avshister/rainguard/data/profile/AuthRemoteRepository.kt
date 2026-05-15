@@ -6,18 +6,12 @@ import com.olga.avshister.rainguard.data.network.NetworkClient
 import com.olga.avshister.rainguard.data.network.TokenManager
 import com.olga.avshister.rainguard.data.network.auth.AuthRequest
 import com.olga.avshister.rainguard.data.network.owner.RegisterStuffRequest
-import com.olga.avshister.rainguard.data.network.profile.ProfileNet
 import com.olga.avshister.rainguard.data.network.profile.ProfileNet.Companion.toDomain
-import com.olga.avshister.rainguard.domain.cart.Cart
 import com.olga.avshister.rainguard.domain.profile.Profile
 import com.olga.avshister.rainguard.domain.profile.Role
-import kotlin.random.Random
 
 class AuthRemoteRepository(val context: Context): AuthRepository {
     val apiService = NetworkClient(context).apiService
-    override fun auth(phone: String) {
-        TODO("Not yet implemented")
-    }
 
     override suspend fun auth(
         phone: String,
@@ -41,31 +35,7 @@ class AuthRemoteRepository(val context: Context): AuthRepository {
         return apiService.getProfile()?.toDomain()
     }
 
-    override fun updateProfile(profile: Profile) {
-        TODO("Not yet implemented")
-    }
-
-    override fun finishRent(timeNow: Long) {
-        TODO("Not yet implemented")
-    }
-
     override suspend fun registerStuff(name: String, phone: String) {
         apiService.registerStuff(RegisterStuffRequest(name, phone, Role.STUFF.name))
-    }
-
-    override suspend fun getCart(): Cart? {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun addToCart(article: Long) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun removeFromCart(article: Long) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun clearCart() {
-        TODO("Not yet implemented")
     }
 }

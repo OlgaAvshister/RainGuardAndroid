@@ -6,8 +6,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.olga.avshister.rainguard.data.cart.CartLocalRepository
 import com.olga.avshister.rainguard.data.cart.CartRepository
-import com.olga.avshister.rainguard.data.profile.AuthLocalRepository
-import com.olga.avshister.rainguard.data.profile.AuthRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointRemoteRepository
 import com.olga.avshister.rainguard.data.rent_point.RentPointRepository
 import com.olga.avshister.rainguard.domain.products.Product
@@ -21,9 +19,7 @@ class CartViewModel(
     private val rentPointId: Long,
     private val selectedArticles: Set<Long>
 ) : ViewModel() {
-    //private val rentPointRepository: RentPointRepository = RentPointLocalRepository
     private val rentPointRepository: RentPointRepository = RentPointRemoteRepository(context)
-    private val authRepository: AuthRepository = AuthLocalRepository(context)
     private val cartLocalRepository: CartRepository = CartLocalRepository
 
     data class State(
