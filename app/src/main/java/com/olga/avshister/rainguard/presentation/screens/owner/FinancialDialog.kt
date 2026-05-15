@@ -5,14 +5,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.mikephil.charting.charts.BarChart
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.data.*
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.olga.avshister.rainguard.R
 import com.olga.avshister.rainguard.domain.rent.Rent
+import com.olga.avshister.rainguard.presentation.ui.utils.Utils
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -39,7 +41,7 @@ fun FinancialDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Финансы") },
+        title = { Text(stringResource(R.string.owner_finance)) },
         text = {
             Column(
                 modifier = Modifier
@@ -55,7 +57,7 @@ fun FinancialDialog(
                         modifier = Modifier.padding(8.dp)
                     ) {
                         Text(
-                            text = "Выручка по дням",
+                            text = stringResource(R.string.owner_revenue_by_day),
                             style = MaterialTheme.typography.titleSmall
                         )
                         BarChartRevenue(
@@ -73,7 +75,7 @@ fun FinancialDialog(
                         modifier = Modifier.padding(8.dp)
                     ) {
                         Text(
-                            text = "Количество продаж по дням",
+                            text = stringResource(R.string.owner_sales_number_by_day),
                             style = MaterialTheme.typography.titleSmall
                         )
                         LineChartSales(
@@ -86,7 +88,7 @@ fun FinancialDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Закрыть")
+                Text(stringResource(R.string.close))
             }
         }
     )
@@ -104,8 +106,8 @@ fun BarChartRevenue(
                     BarEntry(index.toFloat(), value.toFloat())
                 }
 
-                val dataSet = BarDataSet(entries, "Выручка (₽)").apply {
-                    color = Color.parseColor("#5E00FF")
+                val dataSet = BarDataSet(entries, context.getString (R.string.owner_revenue)).apply {
+                    color = Color.BLUE
                     valueTextColor = Color.BLACK
                     valueTextSize = 10f
                 }
@@ -146,14 +148,14 @@ fun LineChartSales(
                     Entry(index.toFloat(), count.toFloat())
                 }
 
-                val dataSet = LineDataSet(entries, "Количество продаж").apply {
-                    color = Color.parseColor("#1FC74F")
-                    setCircleColor(Color.parseColor("#1FC74F"))
+                val dataSet = LineDataSet(entries, context.getString(R.string.owner_sales_number)).apply {
+                    color = Color.GREEN
+                    setCircleColor(Color.GREEN)
                     circleRadius = 4f
                     valueTextColor = Color.BLACK
                     valueTextSize = 10f
                     setDrawFilled(true)
-                    fillColor = Color.parseColor("#1FC74F")
+                    fillColor = Color.GREEN
                     fillAlpha = 50
                 }
 

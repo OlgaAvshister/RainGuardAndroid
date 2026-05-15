@@ -126,7 +126,6 @@ fun RainGuardApp() {
 }
 
 suspend fun getStartDestination(context: Context) = withContext(Dispatchers.IO) {
-    //AuthLocalRepository(context).getProfile()?.let {
     try {
         AuthRemoteRepository(context).getProfile()?.let {
             when (it.role) {

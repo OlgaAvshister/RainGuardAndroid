@@ -14,6 +14,7 @@
     <string name="back">Назад</string>
     <string name="logout">Выйти</string>
     <string name="save_changes">Сохранить</string>
+    <string name="close">Закрыть</string>
 
     <!-- Авторизация -->
     <string name="consent_personal_data">При входе или регистрации вы даете согласие на обработку своих персональных данных</string>
@@ -128,5 +129,11 @@
     <string name="owner_add_stuff_label">Добавить сотрудника</string>
     <string name="owner_add_stuff_name">Имя</string>
     <string name="owner_add_stuff_phone">Телефон</string>
+    <string name="owner_finance">Финансы</string>
+    <string name="owner_revenue_by_day">Выручка по дням</string>
+    <string name="owner_revenue">Выручка (₽)</string>
+    <string name="owner_sales_number_by_day">Количество продаж по дням</string>
+    <string name="owner_sales_number">Количество продаж</string>
+
 
 </resources>
