@@ -35,8 +35,15 @@ fun FinancialDialog(
 
     val dates = groupedByDate.keys.toList()
 
-    // todo: высчитать на основе startedAt и completedAt, сейчас просто перемножаем тариф на количество товаров
-    val revenue = groupedByDate.values.map { it.sumOf { rent -> rent.rate.priceValue * rent.productIds.size }.toLong() }
+    val revenue = groupedByDate.values.map {
+        it.sumOf { rent ->
+        val elapsedTime = rent.finishedAt!! - rent.startedAt
+        Utils.calculateCost(
+            timeInMillis = elapsedTime,
+            rate = rent.rate,
+            productsCount = rent.productIds.size).toLong()
+        }
+    }
     val salesCount = groupedByDate.values.map { it.size }
 
     AlertDialog(
