@@ -22,6 +22,9 @@
     <string name="fill_sms_code">Введите код из SMS</string>
     <string name="invalid_sms_code">Неверный код</string>
     <string name="sms_try_again_msg">Попробуйте еще раз</string>
+    <string name="sms_send_again">Отправить повторно</string>
+    <string name="sms_resend_after_n_seconds">Отправить код повторно через %s секунд</string>
+    <string name="sms_you_get_this_after_minute">Код придет в течение минуты на номер +7%s</string>
 
     <!-- Карта -->
     <string name="has_not_active_rent">Оформите новую аренду для просмотра</string>

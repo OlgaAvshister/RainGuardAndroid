@@ -1,8 +1,6 @@
 package com.olga.avshister.rainguard.presentation.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +14,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -28,14 +26,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -52,7 +56,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.olga.avshister.rainguard.R
-import com.olga.avshister.rainguard.presentation.core.MAP_SCREEN
 import com.olga.avshister.rainguard.presentation.ui.theme.RainGuardTheme
 import com.olga.avshister.rainguard.presentation.viewmodel.SmsCodeViewModel
 import kotlinx.coroutines.delay
@@ -61,28 +64,36 @@ import kotlinx.coroutines.launch
 const val TIMER_LIMIT = 40
 
 @Composable
-fun SmsCodeScreen(navController: NavController, phoneNumber: String) {
-    val context = LocalContext.current
+fun SmsCodeScreen(
+    navController: NavController,
+    phoneNumber: String
+) {
+
     val viewModel: SmsCodeViewModel = viewModel()
+    val defaultInfoText = stringResource(R.string.sms_you_get_this_after_minute, phoneNumber)
+    val digitsCount = 4
 
     val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     val scope = rememberCoroutineScope()
 
     var secondsLeft by remember { mutableStateOf(TIMER_LIMIT) }
     var timerActive by remember { mutableStateOf(true) }
     var showResendButton by remember { mutableStateOf(false) }
 
-    // Статус ошибки
     var isError by remember { mutableStateOf(false) }
     var errorText by remember { mutableStateOf("") }
-    var infoText by remember { mutableStateOf("Код придет в течение минуты\nна номер +7${phoneNumber}") }
+    var infoText by remember {
+        mutableStateOf(defaultInfoText)
+    }
 
-    // Вводимые цифры
-    val codeDigits = remember { mutableStateListOf("", "", "", "") }
+    val codeDigits = remember {
+        mutableStateListOf("", "", "", "")
+    }
 
-    // Фокусные запросы для перехода
-    val focusRequesters = List(4) { androidx.compose.ui.focus.FocusRequester() }
-    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusRequesters = remember {
+        List(digitsCount) { FocusRequester() }
+    }
 
     // Таймер
     LaunchedEffect(timerActive) {
@@ -91,91 +102,100 @@ fun SmsCodeScreen(navController: NavController, phoneNumber: String) {
                 delay(1000L)
                 secondsLeft--
             }
+
             timerActive = false
             showResendButton = true
         }
     }
 
-    // Начальное фокусирование и показ клавиатуры
+    // Стартовый фокус
     LaunchedEffect(Unit) {
         focusRequesters[0].requestFocus()
         keyboardController?.show()
     }
 
+    // Actions
     LaunchedEffect(Unit) {
         viewModel.action.collect { action ->
             when (action) {
-                is SmsCodeViewModel.Action.NavigateToScreen-> {
+                is SmsCodeViewModel.Action.NavigateToScreen -> {
                     navController.navigate(action.screen) {
-                        popUpTo(0) { inclusive = true }
+                        popUpTo(0) {
+                            inclusive = true
+                        }
                         launchSingleTop = true
                     }
                 }
+
                 is SmsCodeViewModel.Action.ShowError -> {
-                    // Неправильный код
                     isError = true
                     errorText = action.errorMessage
-                    infoText = context.getString(R.string.sms_try_again_msg)
-                    // очистить поля
-                    for (i in 0..3) {
+                    infoText = defaultInfoText
+
+                    for (i in 0..< digitsCount) {
                         codeDigits[i] = ""
                     }
-                    // вернуть фокус на первое поле
                     scope.launch {
                         focusRequesters[0].requestFocus()
+                        keyboardController?.show()
                     }
                 }
-                else -> {
-
-                }
             }
         }
     }
 
-    // Обработка изменения цифры
     fun onDigitChange(index: Int, value: String) {
+
         val digit = value.filter { it.isDigit() }.take(1)
-        if (digit.isNotEmpty()) {
-            codeDigits[index] = digit
-            if (index < 3) {
-                focusRequesters[index + 1].requestFocus()
-            } else {
-                focusManager.clearFocus()
-                viewModel.onIntent(
-                    SmsCodeViewModel.Intent.Auth(
-                        phone = phoneNumber,
-                        code = codeDigits.joinToString("")
-                    )
-                )
-            }
-        } else {
-            // если удалена цифра, оставляем пустой
+
+        // Удаление
+        if (digit.isEmpty()) {
             codeDigits[index] = ""
+            if (index > 0) {
+                focusRequesters[index - 1].requestFocus()
+            }
+            return
+        }
+
+        // Ввод
+        codeDigits[index] = digit
+
+        isError = false
+
+        if (index < digitsCount - 1 ) {
+            scope.launch {
+                delay(100)
+                focusRequesters[index + 1].requestFocus()
+                keyboardController?.show()
+            }
+
+        } else {
+
+            focusManager.clearFocus()
+
+            viewModel.onIntent(
+                SmsCodeViewModel.Intent.Auth(
+                    phone = phoneNumber,
+                    code = codeDigits.joinToString("")
+                )
+            )
         }
     }
 
-    // Обработка клика по полю для сброса цифр
-    fun onFieldClick(index: Int) {
-        // Очистить это поле
-        codeDigits[index] = ""
-        // установить фокус на это поле
-        scope.launch {
-            focusRequesters[index].requestFocus()
-        }
-    }
-
-    // Обработка нажатия на кнопку "отправить повторно"
     fun resetTimer() {
         secondsLeft = TIMER_LIMIT
         timerActive = true
         showResendButton = false
         isError = false
-        infoText = "Код придет в течение минуты\nна номер +7${phoneNumber}"
-        for (i in 0..3) {
+        infoText = defaultInfoText
+
+        for (i in 0..<digitsCount) {
             codeDigits[i] = ""
         }
+
         scope.launch {
             focusRequesters[0].requestFocus()
+            keyboardController?.show()
         }
     }
 
@@ -187,25 +207,37 @@ fun SmsCodeScreen(navController: NavController, phoneNumber: String) {
             .padding(12.dp)
     ) {
 
+        // Back button
         Row(
             modifier = Modifier.align(Alignment.TopStart),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { navController.popBackStack() }) {
+
+            IconButton(
+                onClick = {
+                    navController.popBackStack()
+                }
+            ) {
+
                 Icon(
-                    Icons.Default.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = stringResource(R.string.back)
                 )
             }
         }
 
+        // Content
         Column(
             modifier = Modifier.align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Text(
-                text = if (isError) errorText else stringResource(R.string.fill_sms_code),
+                text = if (isError) {
+                    errorText
+                } else {
+                    stringResource(R.string.fill_sms_code)
+                },
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black,
@@ -226,36 +258,76 @@ fun SmsCodeScreen(navController: NavController, phoneNumber: String) {
             Row(
                 horizontalArrangement = Arrangement.Center
             ) {
-                for (i in 0..3) {
+
+                for (i in 0..< digitsCount) {
                     val backgroundColor =
-                        if (isError) Color.White else colorResource(R.color.sms_code_fill)
+                        if (isError) {
+                            Color.White
+                        } else {
+                            colorResource(R.color.sms_code_fill)
+                        }
 
                     OutlinedTextField(
                         value = codeDigits[i],
-                        onValueChange = { onDigitChange(i, it) },
+
+                        onValueChange = {
+                            onDigitChange(i, it)
+                        },
+
                         singleLine = true,
+
                         textStyle = LocalTextStyle.current.copy(
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Medium,
                             textAlign = TextAlign.Center
                         ),
+
                         modifier = Modifier
                             .height(68.dp)
                             .width(54.dp)
                             .padding(2.dp)
                             .background(backgroundColor)
                             .focusRequester(focusRequesters[i])
-                            .clickable { onFieldClick(i) }
-                            .focusable(),
+                            .onPreviewKeyEvent { event ->
+                                if (
+                                    event.type == KeyEventType.KeyDown &&
+                                    event.key == Key.Backspace
+                                ) {
+
+                                    // если текущее поле пустое — удаляем символ из предыдущего
+                                    if (codeDigits[i].isEmpty() && i > 0) {
+
+                                        codeDigits[i - 1] = ""
+
+                                        scope.launch {
+                                            delay(100)
+                                            focusRequesters[i - 1].requestFocus()
+                                        }
+
+                                        true
+                                    } else {
+                                        false
+                                    }
+
+                                } else {
+                                    false
+                                }
+                            },
+
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Number,
-                            imeAction = ImeAction.Done
+                            imeAction = if (i == digitsCount - 1) {
+                                ImeAction.Done
+                            } else {
+                                ImeAction.Next
+                            }
                         )
                     )
                 }
             }
         }
 
+        // Bottom
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -264,20 +336,23 @@ fun SmsCodeScreen(navController: NavController, phoneNumber: String) {
         ) {
             if (timerActive) {
                 Text(
-                    text = "Отправить код повторно через $secondsLeft секунд",
+                    text = stringResource(R.string.sms_resend_after_n_seconds, secondsLeft),
                     fontSize = 14.sp,
                     color = colorResource(R.color.gray),
                     textAlign = TextAlign.Center
                 )
+
             } else if (showResendButton) {
                 Button(
-                    onClick = { resetTimer() },
+                    onClick = {
+                        resetTimer()
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorResource(R.color.violet),
                         contentColor = Color.White
                     )
                 ) {
-                    Text("Отправить повторно")
+                    Text(stringResource(R.string.sms_send_again))
                 }
             }
         }
@@ -288,6 +363,9 @@ fun SmsCodeScreen(navController: NavController, phoneNumber: String) {
 @Composable
 fun SmsCodeScreenPreview() {
     RainGuardTheme {
-        SmsCodeScreen(rememberNavController(), "9000000000")
+        SmsCodeScreen(
+            navController = rememberNavController(),
+            phoneNumber = "9000000000"
+        )
     }
 }
