@@ -65,9 +65,9 @@ class PaymentViewModel(application: Application): AndroidViewModel(application) 
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 val newCard = Card(
-                    number = number,
-                    expired = expired,
-                    cvv = cvv.toInt()
+                    number = maskCardNumber(number),
+                    expired = "**/**",
+                    cvv = getCvvHash(cvv.toInt())
                 )
 
                 cardRepository.addCard(newCard)
@@ -79,7 +79,7 @@ class PaymentViewModel(application: Application): AndroidViewModel(application) 
         }
     }
 
-    fun confirmSelection(/*navController: NavController*/) {
+    fun confirmSelection() {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 val checkout = checkoutRepository.getCheckout()
@@ -116,5 +116,13 @@ class PaymentViewModel(application: Application): AndroidViewModel(application) 
             PaymentUiState.Add -> PaymentUiState.Select
             PaymentUiState.Success -> PaymentUiState.Select
         }
+    }
+
+    private fun getCvvHash(cvv: Int): Int {
+        return (cvv * 7 + 13) % 10000
+    }
+
+    private fun maskCardNumber(number: String): String {
+        return "*" + number.takeLast(4)
     }
 }

@@ -171,7 +171,7 @@ private fun CardItem(
         Spacer(Modifier.width(16.dp))
 
         Text(
-            text = "Visa *${card.number.takeLast(4)}",
+            text = "Visa ${card.number}",
             modifier = Modifier.weight(1f)
         )
 
