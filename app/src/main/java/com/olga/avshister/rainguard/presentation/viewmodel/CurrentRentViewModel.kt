@@ -70,7 +70,7 @@ class CurrentRentViewModel(application: Application) : AndroidViewModel(applicat
                     startTime = activeRent.startedAt
                     val rentedProducts = rentPointRepository.searchProducts(
                         ids = activeRent.productIds,
-                        rentPointId = activeRent.startRentPointId!!
+                        rentPointId = activeRent.startRentPointId
                     )
                     _state.value = _state.value.copy(
                         items = rentedProducts,
@@ -82,7 +82,7 @@ class CurrentRentViewModel(application: Application) : AndroidViewModel(applicat
                 } ?: _events.emit(Event.Error(message = "Активная аренда не найдена"))
 
             } catch (e: Exception) {
-                _events.emit(Event.Error(message = e.message.toString()))
+                _events.emit(Event.Error(message = "Не удалось обновить информацию об аренде. Проверьте подключение"))
             }
         }
     }
@@ -116,7 +116,6 @@ class CurrentRentViewModel(application: Application) : AndroidViewModel(applicat
     private fun closeBSheet() {
         viewModelScope.launch {
             stopTimer()
-            // Здесь будет API вызов для завершения аренды
             _events.emit(Event.Close)
         }
     }

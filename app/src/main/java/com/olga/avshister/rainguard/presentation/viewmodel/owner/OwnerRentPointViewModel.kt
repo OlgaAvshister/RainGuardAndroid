@@ -51,7 +51,7 @@ class OwnerRentPointViewModel(application: Application): AndroidViewModel(applic
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = "Ошибка при добавлении сотрудника: ${e.message}"
+                        error = "Не удалось добавить сотрудника. Проверьте номер телефона и попробуйте снова"
                     )
                 }
             }
@@ -84,7 +84,7 @@ class OwnerRentPointViewModel(application: Application): AndroidViewModel(applic
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = "Ошибка при добавлении товара: ${e.message}"
+                        error = "Не удалось добавить товар. Проверьте данные товара и попробуйте снова"
                     )
                 }
             }
@@ -108,7 +108,7 @@ class OwnerRentPointViewModel(application: Application): AndroidViewModel(applic
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = "Ошибка при загрузке финансов: ${e.message}"
+                        error = "Не удалось загрузить финансовую информацию. Попробуйте обновить страницу"
                     )
                 }
             }
@@ -133,7 +133,7 @@ class OwnerRentPointViewModel(application: Application): AndroidViewModel(applic
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = "Ошибка при загрузке пункта выдачи: ${e.message}"
+                        error = "Не удалось загрузить информацию о точке проката. Проверьте подключение к интернету"
                     )
                 }
             }
@@ -158,7 +158,7 @@ class OwnerRentPointViewModel(application: Application): AndroidViewModel(applic
                 _uiState.update {
                     it.copy(
                         isLoading = false,
-                        error = "Ошибка получения статуса товаров: ${e.message}"
+                        error = "Не удалось получить статус товаров. Попробуйте обновить список"
                     )
                 }
             }
@@ -183,7 +183,7 @@ class OwnerRentPointViewModel(application: Application): AndroidViewModel(applic
                     it.copy(
                         isLoading = false,
                         showDeleteConfirmation = false,
-                        error = "Ошибка при удалении пункта выдачи: ${e.message}"
+                        error = "Не удалось удалить точку проката. Убедитесь, что в ней нет активных аренд"
                     )
                 }
             }

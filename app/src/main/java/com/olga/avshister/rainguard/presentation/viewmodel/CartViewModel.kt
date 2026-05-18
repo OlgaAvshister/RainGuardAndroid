@@ -61,7 +61,6 @@ class CartViewModel(
 
                 // Очищаем корзину
                 cartLocalRepository.clearCart()
-                //authRepository.clearCart()
 
                 // Создаем начальное состояние корзины
                 val initialCart = getInitialCartState(rentPointId, selectedArticles)
@@ -76,7 +75,7 @@ class CartViewModel(
             } catch (e: Exception) {
                 _state.update {
                     it.copy(
-                        error = e.message ?: "Ошибка инициализации",
+                        error = "Не удалось загрузить корзину. Попробуйте обновить страницу",
                         isLoading = false
                     )
                 }
@@ -97,7 +96,6 @@ class CartViewModel(
                 _state.update { it.copy(isLoading = true) }
 
                 // Добавляем в репозиторий
-                //authRepository.addToCart(article)
                 cartLocalRepository.addToCart(article)
 
                 // Обновляем состояние UI
@@ -125,7 +123,7 @@ class CartViewModel(
             } catch (e: Exception) {
                 _state.update {
                     it.copy(
-                        error = e.message ?: "Ошибка добавления в корзину",
+                        error = "Не удалось добавить товар в корзину. Попробуйте еще раз",
                         isLoading = false
                     )
                 }
@@ -143,7 +141,6 @@ class CartViewModel(
                     ?.currentQuantity ?: 0
 
                 if (currentQuantity > 0) {
-                    //authRepository.removeFromCart(article)
                     cartLocalRepository.removeFromCart(article)
                 }
 
@@ -167,7 +164,7 @@ class CartViewModel(
             } catch (e: Exception) {
                 _state.update {
                     it.copy(
-                        error = e.message ?: "Ошибка удаления из корзины",
+                        error = "Не удалось удалить товар из корзины. Попробуйте еще раз",
                         isLoading = false
                     )
                 }

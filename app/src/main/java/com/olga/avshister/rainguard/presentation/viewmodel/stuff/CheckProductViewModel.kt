@@ -68,7 +68,7 @@ class CheckProductViewModel(application: Application) : AndroidViewModel(applica
                                     _event.emit(Event.Error("Ошибка получения товара с указанным id. Возможно, такого товара не существует"))
                                 }
                             } catch (e: Exception) {
-                                _event.emit(Event.Error("Ошибка: cause: ${e.cause}, errorMessage=${e.message} "))
+                                _event.emit(Event.Error("Не удалось проверить товар. Убедитесь, что номер правильный, и попробуйте еще раз"))
                             }
                         }
                     }

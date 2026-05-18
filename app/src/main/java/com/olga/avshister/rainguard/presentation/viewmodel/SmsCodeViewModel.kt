@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class SmsCodeViewModel(application: Application): AndroidViewModel(application) {
-    //private val authRepository: AuthRepository = AuthLocalRepository(application)
     private val authRepository: AuthRepository = AuthRemoteRepository(application)
 
     private val _action = MutableSharedFlow<Action>()
@@ -55,7 +54,7 @@ class SmsCodeViewModel(application: Application): AndroidViewModel(application) 
                         }
                     } catch (e: Exception) {
                         Log.e(SMS_CODE_VM_TAG, "auth call Ошибка: message=${e.message}, cause=${e.cause}")
-                        _action.emit(Action.ShowError("Ошибка: message=${e.message}, cause=${e.cause}"))
+                        _action.emit(Action.ShowError("Неверный код подтверждения. Пожалуйста, проверьте SMS и попробуйте снова"))
                     }
                 }
             }
