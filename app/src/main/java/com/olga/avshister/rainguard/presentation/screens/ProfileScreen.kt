@@ -144,13 +144,6 @@ private fun UserInfoCard(state: ProfileViewModel.ProfileState) {
                 .padding(20.dp)
         ) {
             InfoRow(
-                label = stringResource(R.string.user_first_name_label),
-                value = state.name ?: stringResource(R.string.user_property_not_specified)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            InfoRow(
                 label = stringResource(R.string.user_phone_label),
                 value = state.phone ?: stringResource(R.string.user_property_not_specified)
             )
