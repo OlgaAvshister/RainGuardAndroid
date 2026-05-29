@@ -31,7 +31,7 @@ class NetworkClient(context: Context) {
 
     // такой сейчас IP на моей локальной машине
     private val baseLocalUrl = "http://192.168.1.91:8080/"
-    private val baseRemoteUrl = "https://rain-guard-ktor-production-c84f.up.railway.app/"
+    private val baseRemoteUrl = "https://rain-guard-ktor-production.up.railway.app/"
     //private val baseUrl = "http://10.217.134.125:8080/"
 
     // а этот IP - для обращения эмулятора на сервер, развернутый локально на компьютере
